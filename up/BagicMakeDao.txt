@@ -88,6 +88,10 @@ String name_space = "com.mvc.dao.BagicMakeDao";
 		return sqlSession.selectOne(name_space+".selVr1StairForVr2StairIns", params);
 	}
 	
+	public int insVr2Stair(Map<String,Object> params) {
+		return sqlSession.insert(name_space+".insVr2Stair",params);
+	}
+	
 	
 	
 	
