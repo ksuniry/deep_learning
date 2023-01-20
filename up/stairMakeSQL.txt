@@ -103,8 +103,9 @@
 		SELECT (
 					SELECT	COALESCE(MAX(CHAPTER),0) 
 					FROM	TBL_VR2_STAIR 
-					WHERE	BAGIC_VRSTAIR_CD = #{bagic_vrstair_cd}
-					AND		BAGIC_IDX = 1
+					WHERE	VRSTAIR_CD = #{vrstair_cd}
+					AND		BAGIC_VRSTAIR_CD = #{bagic_vrstair_cd}
+					AND		BAGIC_IDX =  #{bagic_idx}
 				)	AS MIN_CHAPTER
 				, (
 					SELECT	COALESCE(MAX(CHAPTER),0)  
