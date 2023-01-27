@@ -9,13 +9,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BagicMakeDao {
+public class BagicStairMakeDao {
 	
 @Qualifier("sqlSession")
 @Autowired(required=true)
 SqlSessionTemplate sqlSession;
 
-String name_space = "com.mvc.dao.BagicMakeDao";
+String name_space = "com.mvc.dao.BagicStairMakeDao";
 
 	public Integer selStair6MaxChapter(){
 		return sqlSession.selectOne(name_space+".selStair6MaxChapter");
@@ -58,6 +58,25 @@ String name_space = "com.mvc.dao.BagicMakeDao";
 		return sqlSession.insert(name_space+".insertOrderStair7" , params);
 	}
 	
+	
+	//real_tabl sql 
+	public  List<Map<String,Object>> selRealStairMaxChapterList() {
+		return sqlSession.selectList(name_space+".selRealStairMaxChapterList");
+	}
+	
+	public int insRealStair(Map<String,Object> params) {
+		return sqlSession.insert(name_space+".insRealStair",params);
+	}
+	
+	public int delRealStair() {
+		return sqlSession.delete(name_space+".delRealStair");
+	}
+	
+	public Map<String,Object> selRealStairOfBagicTbl(Map<String,Object> params) {
+		return sqlSession.selectOne(name_space+".selRealStairOfBagicTbl" , params);
+	}
+
+	
 	//vr1_tabl sql 
 	public  List<Map<String,Object>> selVr1StairByBagicIdxList(int bagic_idx) {
 		return sqlSession.selectList(name_space+".selVr1StairByBagicIdxList" , bagic_idx);
@@ -91,16 +110,6 @@ String name_space = "com.mvc.dao.BagicMakeDao";
 	public int insVr2Stair(Map<String,Object> params) {
 		return sqlSession.insert(name_space+".insVr2Stair",params);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public List<Map<String,Object>> selVr1StairOfVrstairCdByBagicIdx(int bagic_idx) {
 		return sqlSession.selectList(name_space+".selVr1StairOfVrstairCdByBagicIdx", bagic_idx);
