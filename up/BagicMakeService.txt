@@ -264,7 +264,7 @@ public class BagicStairMakeService {
 				if( min_chapter < max_chapter ) {
 					for(int j = min_chapter ; j < max_chapter ; j++) {
 						insMap = new HashMap<String,Object>();
-						insMap.put("vrstair_cd", ins_vrstair_cd);
+						insMap.put("vrstair_cd", ins_vrstair_cd.replace("stair", "vr1Stair"));
 						insMap.put("bagic_idx", i);
 						insMap.put("chapter", j+1);
 						insMap.put("bagic_vrstair_cd","TBL_REAL_STAIR");
@@ -325,7 +325,7 @@ public class BagicStairMakeService {
 				if( min_chapter < max_chapter ) {
 					for(int j = min_chapter ; j < max_chapter ; j++) {
 						insMap = new HashMap<String,Object>();
-						insMap.put("vrstair_cd", ins_vrstair_cd);
+						insMap.put("vrstair_cd", ins_vrstair_cd.replace("stair", "vr2Stair"));
 						insMap.put("bagic_idx", i);
 						insMap.put("chapter", j+1);
 						insMap.put("bagic_vrstair_cd","TBL_VR1_STAIR");
