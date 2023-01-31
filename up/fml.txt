@@ -1,0 +1,40 @@
+package com.mvc.fml;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cont.VerifyCont;
+import com.mvc.dao.FmlDao;
+import com.util.CmmUtil;
+
+@Service
+public class Fml {
+	
+	@Autowired
+	FmlDao fmlDao;
+	
+	private static Logger logger = Logger.getLogger(Fml.class.getName());
+	
+	public List<Map<String,Object>> fmlBagicMake() {
+		
+		String[] forStairFml_table_arr = {"TBL_WIN_STAIR6","TBL_WIN_STAIR7","TBL_ORDER_WIN_STAIR6","TBL_ORDER_WIN_STAIR7","TBL_VR1_STAIR","TBL_VR2_STAIR"};
+		
+		{
+			
+		}
+		
+		
+		List<Map<String,Object>> fmlBagicList = fmlDao.selFmlBagicList();
+		
+		for(Map<String,Object> fmlBagic : fmlBagicList) {
+			
+		} 
+		
+		return fmlDao.selFmlBagicList();
+	}
+}
