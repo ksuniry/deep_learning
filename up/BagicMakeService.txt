@@ -172,267 +172,181 @@ public class BagicStairMakeService {
 	}
 	
 	public Map<String,Object> makeRealStair() throws Exception{
-		String[] bagic_stair_tbl = {"tbl_win_stair6","tbl_win_stair7","tbl_order_win_stair6","tbl_order_win_stair7"};
-		 Map<String,Object> insMap = null;
-		{// 초기화 : 아무것도 없을때
-			List<Map<String,Object>> init_list = bagicMakeDao.selRealStairMaxChapterList();
-			if(init_list != null && init_list.size() == 4){
-				//정상 임 그냥 진행
-			}else {
-				//다 지우고 처음 1회내용을  넣어줌(180).
-				 bagicMakeDao.delRealStair();
-				 
-				
-				 //기준이 되는 기본 계단식 4개로 for문 		 
-				 for(int i=0 ; i < bagic_stair_tbl.length ; i++ ) {
-					 switch(i) {
-					 	case 0 : insMap = bagicMakeDao.selStair6Info(1);
-					 		break;
-					 	case 1 : insMap = bagicMakeDao.selStair7Info(1);
-				 			break;
-					 	case 2 : insMap = bagicMakeDao.selOrderStair6Info(1);
-				 			break;
-					 	case 3 : insMap = bagicMakeDao.selOrderStair7Info(1);
-				 			break;
-					 }
-					 
-					 insMap.put("vrstair_cd",FormulaUtil.vrstairCdBagic(bagic_stair_tbl[i]));
-					 bagicMakeDao.insRealStair(insMap);
-					 
-				 }
-			}
-		}		
-		
 		Map<String,Object> rtnMap = new HashMap<String,Object>();
-		Map<String,Object> params = null;
-		int max_chapter = 0;
-		int win_max_chapter = mainDao.selMaxChapter();
-		 List<Map<String,Object>> list = bagicMakeDao.selRealStairMaxChapterList();
-		 for(int j = 0 ; j < list.size() ; j++) {
-			 // 각 구룹의  max_chapter 기준으로 
-			 max_chapter = CmmUtil.mapGetInteger(list.get(j),"max_chapter");
-			 
-			 params = new HashMap<String,Object>();
-			 params.put("vrstair_cd",CmmUtil.mapGetString(list.get(j),"vrstair_cd"));
-			 params.put("bagic_tbl",CmmUtil.mapGetString(list.get(j),"bagic_tbl"));
-			 
-			 for(int k=max_chapter+1 ; k <=win_max_chapter ; k++) {
-				 params.put("chapter", k);
-				 insMap = bagicMakeDao.selRealStairOfBagicTbl(params);
-				 insMap.put("vrstair_cd",CmmUtil.mapGetString(list.get(j),"vrstair_cd"));
-				
-				 logger.info(insMap.toString());
-				 bagicMakeDao.insRealStair(insMap);
-			 }
-			 
-		 }
 		
+		String[] bagic_stair_tbl = {"tbl_win_stair6","tbl_win_stair7","tbl_order_win_stair6","tbl_order_win_stair7"};
+		
+		//max를 구해야함
+		Map<String,Object> insMap = null;
+		Map<String,Object> params = null;
+		List<Map<String,Object>> bagic_stair_list = null;
+		List<Map<String,Object>> real_stair_max_chapter_list = null;
+		String ins_vrstair_cd = null;
+		int max_chapter = 0;
+		int min_chapter = 0;
+		for(int i=0 ; i < bagic_stair_tbl.length ; i++ ) {
+			params = new HashMap<String,Object>();
+			switch(i) {
+			 	case 0 : bagic_stair_list = bagicMakeDao.selStair6List(params);
+			 		break;
+			 	case 1 : bagic_stair_list = bagicMakeDao.selStair7List(params);
+		 			break;
+			 	case 2 : bagic_stair_list = bagicMakeDao.selOrderStair6List(params);
+		 			break;
+			 	case 3 : bagic_stair_list = bagicMakeDao.selOrderStair7List(params);
+		 			break;
+			}
+			if(bagic_stair_list != null && bagic_stair_list.size() > 0) {
+				max_chapter = bagic_stair_list.size();
+			}else {
+				max_chapter = 0;
+			}
+			params = new HashMap<String,Object>();
+			ins_vrstair_cd = FormulaUtil.vrstairCdBagic(bagic_stair_tbl[i]);
+			params.put("vrstair_cd",ins_vrstair_cd);
+			
+			real_stair_max_chapter_list = bagicMakeDao.selRealStairMaxChapterList(params);
+			
+			if(real_stair_max_chapter_list != null && real_stair_max_chapter_list.size() > 0) {
+				min_chapter = Integer.parseInt(String.valueOf(real_stair_max_chapter_list.get(0).get("max_chapter")));
+			}else {
+				min_chapter = 0;
+			}
+			
+			if( min_chapter < max_chapter) {
+				for(int j = min_chapter ; j < max_chapter ; j++) {
+					insMap = new HashMap<String,Object>();
+					insMap.putAll(bagic_stair_list.get(j));
+					insMap.put("vrstair_cd", ins_vrstair_cd);
+					insMap.put("bagic_tbl",bagic_stair_tbl[i]);
+					bagicMakeDao.insRealStair(insMap);
+				}
+			} 
+		 }
 		return rtnMap;
 	}
 	
 	
 	public Map<String,Object> makeVr1Stair() throws Exception{
-		String[] vr1_bagic_tbl = {"tbl_win_stair6","tbl_win_stair7","tbl_order_win_stair6","tbl_order_win_stair7"};
-		
-		{// 초기화 : 아무것도 없을때
-			List<Map<String,Object>> init_list = bagicMakeDao.selVr1StairByBagicIdxList(1);
-			if(init_list != null && init_list.size() == 4){
-				//정상 임 그냥 진행
-			}else {
-				//다 지우고 처음 1회내용을  넣어줌(180).
-				 bagicMakeDao.delVr1Stair();
-				 
-				 Map<String,Object> bagicStairMap = null;
-				 Map<String,Object> insMap = null;
-				 int[] bagicStairArr = null;
-				 int insChapter = 0;
-				 int insNum = 0;
-				 //기준이 되는 기본 계단식 4개로 for문 		 
-				 for(int i=0 ; i < vr1_bagic_tbl.length ; i++ ) {
-					 insMap = new HashMap<String,Object>(); 
-					 switch(i) {
-					 	case 0 : bagicStairMap = bagicMakeDao.selStair6Info(1);
-					 		break;
-					 	case 1 : bagicStairMap = bagicMakeDao.selStair7Info(1);
-				 			break;
-					 	case 2 : bagicStairMap = bagicMakeDao.selOrderStair6Info(1);
-				 			break;
-					 	case 3 : bagicStairMap = bagicMakeDao.selOrderStair7Info(1);
-				 			break;
-					 }
-					 
-					 bagicStairArr = CmmUtil.map45ToIntArray(bagicStairMap);
-					 insChapter = Integer.parseInt(String.valueOf(bagicStairMap.get("chapter")));
-					 
-					 for(int j = 0 ; j < 45 ; j++) {
-						 insMap.put("vrstair_cd",vr1_bagic_tbl[i]+"_"+(j+1));
-						 insMap.put("bagic_source", vr1_bagic_tbl[i]);
-						 insMap.put("bagic_idx",j+1);
-						 insMap.put("chapter",insChapter);
-						 for(int k = 0 ; k < 45 ; k++) {
-							 insNum = bagicStairArr[k]+Integer.parseInt(String.valueOf(bagicStairArr[j]));
-							 insMap.put("num"+(k+1),insNum > 45 ? insNum -45 : insNum);
-						 }
-						 
-						 logger.info(insMap.toString());
-						 
-						 bagicMakeDao.insVr1Stair(insMap);
-					 }
-				 }
-			}
-		}		
 		
 		Map<String,Object> rtnMap = new HashMap<String,Object>();
+		
 		Map<String,Object> params = null;
-		int[] selBagicTbl_arr = null;
+		Map<String,Object> insMap = null;
+		List<Map<String,Object>> vr1_stair_list = null;
+		List<Map<String,Object>> bagic_stair_list = null;
+		int bagic_stair_arr[] = null;
+		String bagic_vrstair_cd = null;
+		String ins_vrstair_cd = null;
 		int max_chapter = 0;
-		int win_max_chapter = mainDao.selMaxChapter();
+		int min_chapter = 0;
 		int insNum = 0;
-		for(int i=1 ; i < 46 ; i++) {
-			 List<Map<String,Object>> list = bagicMakeDao.selVr1StairByBagicIdxList(i);
-			 for(int j = 0 ; j < list.size() ; j++) {
-				 // 각 구룹의  max_chapter 기준으로 
-				 max_chapter = CmmUtil.mapGetInteger(list.get(j),"max_chapter");
-				 
-				 params = new HashMap<String,Object>();
-				 params.put("vrstair_cd",CmmUtil.mapGetString(list.get(j),"vrstair_cd"));
-				 params.put("bagic_source",CmmUtil.mapGetString(list.get(j),"bagic_source"));
-				 params.put("bagic_idx",CmmUtil.mapGetInteger(list.get(j),"bagic_idx"));
-				 
-				 for(int k=max_chapter+1 ; k <=win_max_chapter ; k++) {
-					 params.put("chapter", k);
-					 selBagicTbl_arr = CmmUtil.map45ToIntArray(bagicMakeDao.selVr1StairOfBagicTbl(params));
-					
-					 for(int l = 0 ; l < 45 ; l++) {
+		
+		List<Map<String,Object>> make_real_stair_max_chapter_list = bagicMakeDao.selRealStairMaxChapterList(new HashMap<String,Object>());
+		
+		for(Map<String,Object> make_real_stair : make_real_stair_max_chapter_list) {
+			max_chapter = Integer.parseInt(String.valueOf(make_real_stair.get("max_chapter")));
+			bagic_vrstair_cd = String.valueOf(make_real_stair.get("vrstair_cd"));
+			params = new HashMap<String,Object>();
+			params.put("vrstair_cd", bagic_vrstair_cd);
+			bagic_stair_list = bagicMakeDao.selRealStairList(params);
+			for(int i = 0 ; i < 45 ; i++) {
+				params = new HashMap<String,Object>();
+				ins_vrstair_cd = bagic_vrstair_cd+"_"+i;
+				params.put("vrstair_cd", ins_vrstair_cd);
+				vr1_stair_list = bagicMakeDao.selVr1StairList(params);
+				if(vr1_stair_list != null && vr1_stair_list.size() > 0) {
+					min_chapter = vr1_stair_list.size();
+				}else {
+					min_chapter = 0;
+				}
+				
+				if( min_chapter < max_chapter ) {
+					for(int j = min_chapter ; j < max_chapter ; j++) {
+						insMap = new HashMap<String,Object>();
+						insMap.put("vrstair_cd", ins_vrstair_cd);
+						insMap.put("bagic_idx", i);
+						insMap.put("chapter", j+1);
+						insMap.put("bagic_vrstair_cd","TBL_REAL_STAIR");
+						bagic_stair_arr = CmmUtil.map45ToIntArray(bagic_stair_list.get(j));
+						for(int l = 0 ; l < 45 ; l++) {
 							 //i 는 해당 더하는 key이다
 						 	if(j+1%2 == 1) {
-						 		insNum = selBagicTbl_arr[l]+selBagicTbl_arr[i];
+						 		insNum = bagic_stair_arr[l]+bagic_stair_arr[i];
 						 	}else {
-						 		insNum = selBagicTbl_arr[44-l]+selBagicTbl_arr[i];
+						 		insNum = bagic_stair_arr[44-l]+bagic_stair_arr[i];
 						 	}
-							 params.put("num"+(l+1),insNum > 45 ? insNum - 45 : insNum);
-					
-					 }
-					 logger.info(params.toString());
-					 bagicMakeDao.insVr1Stair(params);
-				 }
-				 
-			 }
-			 
+						 	insMap.put("num"+(l+1),insNum > 45 ? insNum - 45 : insNum);
+						}
+						bagicMakeDao.insVr1Stair(insMap);
+					}
+				}
+			
+			}
+			
 		}
-		
 		return rtnMap;
 	}
 	
 	public Map<String,Object> makeVr2Stair() throws Exception{
 		
-		//VR1_TBL_STAIR 은 어차피 다 있을테니 
-		Map<String,Object> bagic_map = null;
-		Map<String,Object> vr2Stair = null;
-		String vr1stair_cd = null;
-		for(int i = 1 ; i < 46 ; i++) {
-			List<Map<String,Object>> bagic_list = bagicMakeDao.selVr1StairOfVrstairCdByBagicIdx(i);
-			for(int j = 0 ; j < bagic_list.size() ; j++) {
-				//VRSTAIR_CD 만 이걸 가지고 최대 VR2_TBL_STAIR의 max chapter를 구해야함 
-				bagic_map = bagic_list.get(j);
-				vr1stair_cd = CmmUtil.mapGetString(bagic_map, "vrstair_cd");
-				vr2Stair = bagicMakeDao.selVr2StairMaxChapter(vr1stair_cd);
-			}
-		}
-		
-		
-		String[] vr1_bagic_tbl = {"tbl_win_stair6","tbl_win_stair7","tbl_order_win_stair6","tbl_order_win_stair7"};
-		
-		{
-			List<Map<String,Object>> init_list = bagicMakeDao.selVr1StairByBagicIdxList(1);
-			if(init_list != null && init_list.size() == 4){
-				//정상 임 그냥 진행
-			}else {
-				//다 지우고 처음 1회내용을  넣어줌(180).
-				 bagicMakeDao.delVr1Stair();
-				 
-				 Map<String,Object> bagicStairMap = null;
-				 Map<String,Object> insMap = null;
-				 int[] bagicStairArr = null;
-				 int insChapter = 0;
-				 int insNum = 0;
-				 //기준이 되는 기본 계단식 4개로 for문 		 
-				 for(int i=0 ; i < vr1_bagic_tbl.length ; i++ ) {
-					 insMap = new HashMap<String,Object>(); 
-					 switch(i) {
-					 	case 0 : bagicStairMap = bagicMakeDao.selStair6Info(1);
-					 		break;
-					 	case 1 : bagicStairMap = bagicMakeDao.selStair7Info(1);
-				 			break;
-					 	case 2 : bagicStairMap = bagicMakeDao.selOrderStair6Info(1);
-				 			break;
-					 	case 3 : bagicStairMap = bagicMakeDao.selOrderStair7Info(1);
-				 			break;
-					 }
-					 
-					 bagicStairArr = CmmUtil.map45ToIntArray(bagicStairMap);
-					 insChapter = Integer.parseInt(String.valueOf(bagicStairMap.get("chapter")));
-					 
-					 for(int j = 0 ; j < 45 ; j++) {
-						 insMap.put("vrstair_cd",vr1_bagic_tbl[i]+"_"+(j+1));
-						 insMap.put("bagic_tbl", vr1_bagic_tbl[i]);
-						 insMap.put("bagic_idx",j+1);
-						 insMap.put("chapter",insChapter);
-						 for(int k = 0 ; k < 45 ; k++) {
-							 insNum = bagicStairArr[k]+Integer.parseInt(String.valueOf(bagicStairArr[j]));
-							 insMap.put("num"+(k+1),insNum > 45 ? insNum -45 : insNum);
-						 }
-						 
-						 logger.info(insMap.toString());
-						 
-						 bagicMakeDao.insVr1Stair(insMap);
-					 }
-				 }
-			}
-		}		
-		
 		Map<String,Object> rtnMap = new HashMap<String,Object>();
+		
 		Map<String,Object> params = null;
-		int[] selBagicTbl_arr = null;
+		Map<String,Object> insMap = null;
+		List<Map<String,Object>> vr2_stair_list = null;
+		List<Map<String,Object>> bagic_stair_list = null;
+		int bagic_stair_arr[] = null;
+		String bagic_vrstair_cd = null;
+		String ins_vrstair_cd = null;
 		int max_chapter = 0;
-		int win_max_chapter = mainDao.selMaxChapter();
+		int min_chapter = 0;
 		int insNum = 0;
-		for(int i=1 ; i < 46 ; i++) {
-			 List<Map<String,Object>> list = bagicMakeDao.selVr1StairByBagicIdxList(i);
-			 for(int j = 0 ; j < list.size() ; j++) {
-				 // 각 구룹의  max_chapter 기준으로 
-				 max_chapter = CmmUtil.mapGetInteger(list.get(j),"max_chapter");
-				 
-				 params = new HashMap<String,Object>();
-				 params.put("vrstair_cd",CmmUtil.mapGetString(list.get(j),"vrstair_cd"));
-				 params.put("bagic_tbl",CmmUtil.mapGetString(list.get(j),"bagic_tbl"));
-				 params.put("bagic_idx",CmmUtil.mapGetInteger(list.get(j),"bagic_idx"));
-				 
-				 for(int k=max_chapter+1 ; k <=win_max_chapter ; k++) {
-					 params.put("chapter", k);
-					 selBagicTbl_arr = CmmUtil.map45ToIntArray(bagicMakeDao.selVr1StairOfBagicTbl(params));
-					
-					 for(int l = 0 ; l < 45 ; l++) {
+		
+		List<Map<String,Object>> make_vr1_stair_max_chapter_list = bagicMakeDao.selVr1StairMaxChapterList(new HashMap<String,Object>());
+		
+		for(Map<String,Object> make_vr1_stair : make_vr1_stair_max_chapter_list) {
+			max_chapter = Integer.parseInt(String.valueOf(make_vr1_stair.get("max_chapter")));
+			bagic_vrstair_cd = String.valueOf(make_vr1_stair.get("vrstair_cd"));
+			params = new HashMap<String,Object>();
+			params.put("vrstair_cd", bagic_vrstair_cd);
+			bagic_stair_list = bagicMakeDao.selVr1StairList(params);
+			for(int i = 0 ; i < 45 ; i++) {
+				params = new HashMap<String,Object>();
+				ins_vrstair_cd = bagic_vrstair_cd+"_"+i;
+				params.put("vrstair_cd", ins_vrstair_cd);
+				vr2_stair_list = bagicMakeDao.selVr2StairList(params);
+				if(vr2_stair_list != null && vr2_stair_list.size() > 0) {
+					min_chapter = vr2_stair_list.size();
+				}else {
+					min_chapter = 0;
+				}
+				
+				if( min_chapter < max_chapter ) {
+					for(int j = min_chapter ; j < max_chapter ; j++) {
+						insMap = new HashMap<String,Object>();
+						insMap.put("vrstair_cd", ins_vrstair_cd);
+						insMap.put("bagic_idx", i);
+						insMap.put("chapter", j+1);
+						insMap.put("bagic_vrstair_cd","TBL_VR1_STAIR");
+						bagic_stair_arr = CmmUtil.map45ToIntArray(bagic_stair_list.get(j));
+						for(int l = 0 ; l < 45 ; l++) {
 							 //i 는 해당 더하는 key이다
 						 	if(j+1%2 == 1) {
-						 		insNum = selBagicTbl_arr[l]+selBagicTbl_arr[i];
+						 		insNum = bagic_stair_arr[l]+bagic_stair_arr[i];
 						 	}else {
-						 		insNum = selBagicTbl_arr[44-l]+selBagicTbl_arr[i];
+						 		insNum = bagic_stair_arr[44-l]+bagic_stair_arr[i];
 						 	}
-							 params.put("num"+(l+1),insNum > 45 ? insNum - 45 : insNum);
-					
-					 }
-					 logger.info(params.toString());
-					 bagicMakeDao.insVr1Stair(params);
-				 }
-				 
-			 }
-			 
+						 	insMap.put("num"+(l+1),insNum > 45 ? insNum - 45 : insNum);
+						}
+						System.out.println(insMap.toString());
+						bagicMakeDao.insVr2Stair(insMap);
+					}
+				}
+			
+			}
+			
 		}
-		
-		return rtnMap;
+		return rtnMap;	
 	}
-	
-	
-
 }
