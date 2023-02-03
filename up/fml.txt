@@ -1,5 +1,6 @@
 package com.mvc.fml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.cont.VerifyCont;
 import com.mvc.dao.FmlDao;
 import com.util.CmmUtil;
+import com.util.FormulaUtil;
 
 @Service
 public class Fml {
@@ -20,21 +22,78 @@ public class Fml {
 	
 	private static Logger logger = Logger.getLogger(Fml.class.getName());
 	
-	public List<Map<String,Object>> fmlBagicMake() {
+	public int fmlStairMake() {
 		
-		String[] forStairFml_table_arr = {"TBL_WIN_STAIR6","TBL_WIN_STAIR7","TBL_ORDER_WIN_STAIR6","TBL_ORDER_WIN_STAIR7","TBL_VR1_STAIR","TBL_VR2_STAIR"};
+		Map<String,Object> params = new HashMap<String, Object>();
 		
-		{
-			
-		}
+		List<String> fml_judg_desc_list = new ArrayList<String>();
+		List<Map<String,Object>> fml_cd_list = null;
 		
-		
-		List<Map<String,Object>> fmlBagicList = fmlDao.selFmlBagicList();
+		fml_judg_desc_list.add("not_over");
+		params.put("fml_judg_desc_list", fml_judg_desc_list);
+		List<Map<String,Object>> fmlBagicList = fmlDao.selFmlBagicList(params );
+		String fml_cd = null;
+		Map<String,Object> ins_params = null;
+		int make_cnt = 0;
 		
 		for(Map<String,Object> fmlBagic : fmlBagicList) {
+			fml_cd_list = fmlDao.selRealStairStairCdList();
+			for(Map<String,Object> fml_cd_map : fml_cd_list) {
+				fml_cd = String.valueOf(fml_cd_map.get("stair_cd"))+"_"+fmlBagic.get("fml_judg_cd")+"_"+fmlBagic.get("rang_cnt")+"_"+fmlBagic.get("inc_cnt");
+				ins_params = new HashMap<String, Object>();
+				ins_params.put("fml_cd", fml_cd);
+				ins_params.put("fml_group", fml_cd_map.get("stair_cd"));
+				ins_params.put("fml_judg", fmlBagic.get("fml_judg_cd"));
+				ins_params.put("fml_tbl", "TBL_REAL_STAIR");
+				ins_params.put("rang_cnt", fmlBagic.get("rang_cnt"));
+				ins_params.put("inc_cnt", fmlBagic.get("inc_cnt"));
+				fmlDao.insNewFml(ins_params);
+				make_cnt++;
+			}
 			
-		} 
+			fml_cd_list = fmlDao.selVr1StairStairCdList();
+			for(Map<String,Object> fml_cd_map : fml_cd_list) {
+				fml_cd = String.valueOf(fml_cd_map.get("stair_cd"))+"_"+fmlBagic.get("fml_judg_cd")+"_"+fmlBagic.get("rang_cnt")+"_"+fmlBagic.get("inc_cnt");
+				ins_params = new HashMap<String, Object>();
+				ins_params.put("fml_cd", fml_cd);
+				ins_params.put("fml_group", fml_cd_map.get("stair_cd"));
+				ins_params.put("fml_judg", fmlBagic.get("fml_judg_cd"));
+				ins_params.put("fml_tbl", "TBL_VR1_STAIR");
+				ins_params.put("rang_cnt", fmlBagic.get("rang_cnt"));
+				ins_params.put("inc_cnt", fmlBagic.get("inc_cnt"));
+				fmlDao.insNewFml(ins_params);
+				make_cnt++;
+			}
+			
+			fml_cd_list = fmlDao.selVr2StairStairCdList();
+			for(Map<String,Object> fml_cd_map : fml_cd_list) {
+				fml_cd = String.valueOf(fml_cd_map.get("stair_cd"))+"_"+fmlBagic.get("fml_judg_cd")+"_"+fmlBagic.get("rang_cnt")+"_"+fmlBagic.get("inc_cnt");
+				ins_params = new HashMap<String, Object>();
+				ins_params.put("fml_cd", fml_cd);
+				ins_params.put("fml_group", fml_cd_map.get("stair_cd"));
+				ins_params.put("fml_judg", fmlBagic.get("fml_judg_cd"));
+				ins_params.put("fml_tbl", "TBL_VR2_STAIR");
+				ins_params.put("rang_cnt", fmlBagic.get("rang_cnt"));
+				ins_params.put("inc_cnt", fmlBagic.get("inc_cnt"));
+				fmlDao.insNewFml(ins_params);
+				make_cnt++;
+			}
+			
+			fml_cd_list = fmlDao.selVr3StairStairCdList();
+			for(Map<String,Object> fml_cd_map : fml_cd_list) {
+				fml_cd = String.valueOf(fml_cd_map.get("stair_cd"))+"_"+fmlBagic.get("fml_judg_cd")+"_"+fmlBagic.get("rang_cnt")+"_"+fmlBagic.get("inc_cnt");
+				ins_params = new HashMap<String, Object>();
+				ins_params.put("fml_cd", fml_cd);
+				ins_params.put("fml_group", fml_cd_map.get("stair_cd"));
+				ins_params.put("fml_judg", fmlBagic.get("fml_judg_cd"));
+				ins_params.put("fml_tbl", "TBL_VR3_STAIR");
+				ins_params.put("rang_cnt", fmlBagic.get("rang_cnt"));
+				ins_params.put("inc_cnt", fmlBagic.get("inc_cnt"));
+				fmlDao.insNewFml(ins_params);
+				make_cnt++;
+			}
+		}
 		
-		return fmlDao.selFmlBagicList();
+		return make_cnt;
 	}
 }

@@ -19,9 +19,9 @@ public class FmlDao {
 	String name_space = "com.mvc.dao.FmlDao";
 	
 	
-	public List<Map<String,Object>> selFmlBagicList(){
+	public List<Map<String,Object>> selFmlBagicList(Map<String,Object> params){
 		
-		return sqlSession.selectList(name_space+".selFmlBagicList");
+		return sqlSession.selectList(name_space+".selFmlBagicList", params);
 	}
 	
 
@@ -40,9 +40,30 @@ public class FmlDao {
 		return sqlSession.insert(name_space+".insNewFml", params);
 	}
 	
-	public int udpFmlErrLastChapter(Map<String,Object> params){
+	public int udpFmlCheckInfo(Map<String,Object> params){
 		
-		return sqlSession.update(name_space+".udpFmlErrLastChapter", params);
+		return sqlSession.update(name_space+".udpFmlCheckInfo", params);
+	}
+	
+	
+	public  List<Map<String,Object>> selRealStairStairCdList(){
+		
+		return sqlSession.selectList(name_space+".selRealStairStairCdList");
+	}
+	
+	public  List<Map<String,Object>> selVr1StairStairCdList(){
+		
+		return sqlSession.selectList(name_space+".selVr1StairStairCdList");
+	}
+	
+	public  List<Map<String,Object>> selVr2StairStairCdList(){
+		
+		return sqlSession.selectList(name_space+".selVr2StairStairCdList");
+	}
+	
+	public  List<Map<String,Object>> selVr3StairStairCdList(){
+		
+		return sqlSession.selectList(name_space+".selVr3StairStairCdList");
 	}
 	
 	

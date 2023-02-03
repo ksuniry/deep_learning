@@ -112,29 +112,38 @@
 	<!-- real_tbl_stair -->
 	
 	<select id="selRealStairMaxChapterList" resultType="java.util.Map">
-		SELECT	VRSTAIR_CD , BAGIC_TBL , MAX(CHAPTER) MAX_CHAPTER
+		SELECT	STAIR_CD , BAGIC_TBL , MAX(CHAPTER) MAX_CHAPTER
 		FROM	TBL_REAL_STAIR
 		WHERE 	1=1
-	<if test="vrstair_cd != null and !''.equals(vrstair_cd)">
-		AND 	VRSTAIR_CD =  #{vrstair_cd}	
+	<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}	
 	</if>
-		GROUP  	BY VRSTAIR_CD , BAGIC_TBL
-		ORDER BY VRSTAIR_CD DESC
+		GROUP  	BY STAIR_CD , BAGIC_TBL
+		ORDER BY STAIR_CD DESC
 	</select>
 	
 	<select id="selRealStairList" resultType="java.util.Map" parameterType="java.util.Map">
 		SELECT	*
 		FROM	TBL_REAL_STAIR
 		WHERE 	1=1 
-		<if test="vrstair_cd != null and !''.equals(vrstair_cd)">
-		AND 	VRSTAIR_CD =  #{vrstair_cd}
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
 		</if>
-		ORDER BY VRSTAIR_CD DESC, CHAPTER
+		ORDER BY STAIR_CD DESC, CHAPTER
+	</select>
+	
+	<select id="selRealStairCnt" resultType="Integer" parameterType="java.util.Map">
+		SELECT	COUNT(*)
+		FROM	TBL_REAL_STAIR
+		WHERE 	1=1 
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
+		</if>
 	</select>
 	
 	<insert id="insRealStair" parameterType="java.util.Map">
 		INSERT INTO	TBL_REAL_STAIR
-		VALUES	(#{vrstair_cd},#{bagic_tbl},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
+		VALUES	(#{stair_cd},#{bagic_tbl},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
 				#{num23},#{num24},#{num25},#{num26},#{num27},#{num28},#{num29},#{num30},#{num31},#{num32},#{num33},#{num34},#{num35},#{num36},#{num37},#{num38},#{num39},#{num40},#{num41},#{num42},#{num43},#{num44},#{num45})
 	</insert>
 	
@@ -142,49 +151,104 @@
 	
 	
 	<select id="selVr1StairMaxChapterList" resultType="java.util.Map">
-		SELECT	VRSTAIR_CD , BAGIC_VRSTAIR_CD , MAX(CHAPTER) MAX_CHAPTER
+		SELECT	STAIR_CD , BAGIC_STAIR_CD , MAX(CHAPTER) MAX_CHAPTER
 		FROM	TBL_VR1_STAIR
 		WHERE 	1=1
-	<if test="vrstair_cd != null and !''.equals(vrstair_cd)">
-		AND 	VRSTAIR_CD =  #{vrstair_cd}	
+	<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}	
 	</if>
-		GROUP  	BY VRSTAIR_CD , BAGIC_VRSTAIR_CD
-		ORDER BY VRSTAIR_CD DESC
+		GROUP  	BY STAIR_CD , BAGIC_STAIR_CD
+		ORDER BY STAIR_CD DESC
 	</select>
 	
 	<select id="selVr1StairList" resultType="java.util.Map" parameterType="java.util.Map">
 		SELECT	*
 		FROM	TBL_VR1_STAIR
 		WHERE 	1=1 
-		<if test="vrstair_cd != null and !''.equals(vrstair_cd)">
-		AND 	VRSTAIR_CD =  #{vrstair_cd}
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
 		</if>
-		ORDER BY VRSTAIR_CD DESC, CHAPTER
+		ORDER BY STAIR_CD DESC, CHAPTER
+	</select>
+	
+	<select id="selVr1StairCnt" resultType="Integer" parameterType="java.util.Map">
+		SELECT	COUNT(*)
+		FROM	TBL_VR1_STAIR
+		WHERE 	1=1 
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
+		</if>
 	</select>
 	
 	<insert id="insVr1Stair" parameterType="java.util.Map">
 			INSERT INTO	TBL_VR1_STAIR
-			VALUES	(#{vrstair_cd},#{bagic_vrstair_cd},#{bagic_idx},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
+			VALUES	(#{stair_cd},#{bagic_stair_cd},#{bagic_idx},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
 					#{num23},#{num24},#{num25},#{num26},#{num27},#{num28},#{num29},#{num30},#{num31},#{num32},#{num33},#{num34},#{num35},#{num36},#{num37},#{num38},#{num39},#{num40},#{num41},#{num42},#{num43},#{num44},#{num45})
 	</insert>
 	
 	
 	<!-- vr2_tbl_stair -->
 	
+	<select id="selVr2StairMaxChapterList" resultType="java.util.Map">
+		SELECT	STAIR_CD , BAGIC_STAIR_CD , MAX(CHAPTER) MAX_CHAPTER
+		FROM	TBL_VR2_STAIR
+		WHERE 	1=1
+	<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}	
+	</if>
+		GROUP  	BY STAIR_CD , BAGIC_STAIR_CD
+		ORDER BY STAIR_CD DESC
+	</select>
 	
 	<select id="selVr2StairList" resultType="java.util.Map" parameterType="java.util.Map">
 		SELECT	*
 		FROM	TBL_VR2_STAIR
 		WHERE 	1=1 
-		<if test="vrstair_cd != null and !''.equals(vrstair_cd)">
-		AND 	VRSTAIR_CD =  #{vrstair_cd}
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
 		</if>
-		ORDER BY VRSTAIR_CD DESC, CHAPTER
+		ORDER BY STAIR_CD DESC, CHAPTER
+	</select>
+	
+	<select id="selVr2StairCnt" resultType="Integer" parameterType="java.util.Map">
+		SELECT	COUNT(*)
+		FROM	TBL_VR2_STAIR
+		WHERE 	1=1 
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
+		</if>
 	</select>
 	
 	<insert id="insVr2Stair" parameterType="java.util.Map">
 			INSERT INTO	TBL_VR2_STAIR
-			VALUES	(#{vrstair_cd},#{bagic_vrstair_cd},#{bagic_idx},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
+			VALUES	(#{stair_cd},#{bagic_stair_cd},#{bagic_idx},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
+					#{num23},#{num24},#{num25},#{num26},#{num27},#{num28},#{num29},#{num30},#{num31},#{num32},#{num33},#{num34},#{num35},#{num36},#{num37},#{num38},#{num39},#{num40},#{num41},#{num42},#{num43},#{num44},#{num45})
+	</insert>
+	
+	<!-- vr3_tbl_stair -->
+	
+	<select id="selVr3StairList" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT	*
+		FROM	TBL_VR3_STAIR
+		WHERE 	1=1 
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
+		</if>
+		ORDER BY STAIR_CD DESC, CHAPTER
+	</select>
+	
+	<select id="selVr3StairCnt" resultType="Integer" parameterType="java.util.Map">
+		SELECT	COUNT(*)
+		FROM	TBL_VR3_STAIR
+		WHERE 	1=1 
+		<if test="stair_cd != null and !''.equals(stair_cd)">
+		AND 	STAIR_CD =  #{stair_cd}
+		</if>
+	</select>
+	
+	<insert id="insVr3Stair" parameterType="java.util.Map">
+			INSERT INTO	TBL_VR3_STAIR
+			VALUES	(#{stair_cd},#{bagic_stair_cd},#{bagic_idx},#{chapter},#{num1},#{num2},#{num3},#{num4},#{num5},#{num6},#{num7},#{num8},#{num9},#{num10},#{num11},#{num12},#{num13},#{num14},#{num15},#{num16},#{num17},#{num18},#{num19},#{num20},#{num21},#{num22},
 					#{num23},#{num24},#{num25},#{num26},#{num27},#{num28},#{num29},#{num30},#{num31},#{num32},#{num33},#{num34},#{num35},#{num36},#{num37},#{num38},#{num39},#{num40},#{num41},#{num42},#{num43},#{num44},#{num45})
 	</insert>
 	 	

@@ -78,6 +78,10 @@ String name_space = "com.mvc.dao.BagicStairMakeDao";
 		return sqlSession.selectList(name_space+".selRealStairList",params);
 	}
 	
+	public int selRealStairCnt(Map<String,Object> params) {
+		return sqlSession.selectOne(name_space+".selRealStairCnt",params);
+	}
+	
 	public int insRealStair(Map<String,Object> params) {
 		return sqlSession.insert(name_space+".insRealStair",params);
 	}
@@ -92,18 +96,45 @@ String name_space = "com.mvc.dao.BagicStairMakeDao";
 		return sqlSession.selectList(name_space+".selVr1StairList",params);
 	}
 	
+	public int selVr1StairCnt(Map<String,Object> params) {
+		return sqlSession.selectOne(name_space+".selVr1StairCnt",params);
+	}
+	
 	public int insVr1Stair(Map<String,Object> params) {
 		return sqlSession.insert(name_space+".insVr1Stair",params);
 	}
 	
 	//vr2_tabl sql
 	
+	public  List<Map<String,Object>> selVr2StairMaxChapterList(Map<String,Object> params) {
+		return sqlSession.selectList(name_space+".selVr2StairMaxChapterList",params);
+	}
+	
 	public  List<Map<String,Object>> selVr2StairList(Map<String,Object> params) {
 		return sqlSession.selectList(name_space+".selVr2StairList",params);
 	}
 	
+	public int selVr2StairCnt(Map<String,Object> params) {
+		return sqlSession.selectOne(name_space+".selVr2StairCnt",params);
+	}
+	
 	public int insVr2Stair(Map<String,Object> params) {
 		return sqlSession.insert(name_space+".insVr2Stair",params);
+	}
+	
+	
+	//vr3_tabl sql
+	
+	public  List<Map<String,Object>> selVr3StairList(Map<String,Object> params) {
+		return sqlSession.selectList(name_space+".selVr3StairList",params);
+	}
+	
+	public int selVr3StairCnt(Map<String,Object> params) {
+		return sqlSession.selectOne(name_space+".selVr3StairCnt",params);
+	}
+	
+	public int insVr3Stair(Map<String,Object> params) {
+		return sqlSession.insert(name_space+".insVr3Stair",params);
 	}
 	
 }

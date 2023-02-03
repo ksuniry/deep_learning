@@ -1,6 +1,5 @@
 DROP TABLE  CASCADE;
 
-
 CREATE TABLE public.tbl_win_num (
 	chapter int4 NOT NULL,
 	num1 int4 NOT NULL,
@@ -248,18 +247,20 @@ CREATE TABLE public.TBL_FULL_POINT (
 CREATE TABLE public.TBL_fml (
 	fml_cd varchar(30) NOT NULL,
 	fml_group varchar(30) NOT NULL,
-	fml_judg_cd varchar(30) NOT NULL,
+	fml_judg varchar(30) NOT NULL,
 	fml_TBL varchar(30) NOT NULL,
 	check_chapter int4 NOT NULL,
 	state varchar(30) NOT NULL,
 	rang_cnt int4 NOT NULL,
 	inc_cnt int4 NOT NULL,
 	use_yn varchar(30) NOT NULL,
-	err_last_chapter int4 NOT NULL, 
-	agv int4 NOT NULL, 
+	err_last_chapter int4 NOT NULL,
+	err_cnt int4 NOT NULL, 
+	avg int4 NOT NULL, 
 	point int4 NOT NULL, 
 	CONSTRAINT p_tc_chapter PRIMARY KEY (fml_cd)
 );
+CREATE index idx_1_fml on TBL_fml (fml_cd,fml_group,fml_judg);		
 
 DELETE FROM TBL_fml; COMMIT;
 
@@ -290,7 +291,7 @@ insert into TBL_fml_bagic values ('no','not_over',9,2,'Y');
 
 
 CREATE TABLE public.tbl_real_stair (
-	vrstair_cd varchar(100) NOT NULL,
+	stair_cd varchar(100) NOT NULL,
 	bagic_tbl varchar(100) NOT NULL,
 	chapter int4 NOT NULL,
 	num1 int4 NOT NULL,
@@ -338,15 +339,15 @@ CREATE TABLE public.tbl_real_stair (
 	num43 int4 NOT NULL,
 	num44 int4 NOT NULL,
 	num45 int4 NOT NULL,
-	CONSTRAINT p_trs_chapter PRIMARY KEY (vrstair_cd,bagic_tbl,chapter)
+	CONSTRAINT p_trs_chapter PRIMARY KEY (stair_cd,bagic_tbl,chapter)
 );
-CREATE index idx_1_trs on tbl_real_stair (vrstair_cd,bagic_tbl,chapter);		
-CREATE index idx_2_trs on tbl_real_stair (vrstair_cd,bagic_tbl);
+CREATE index idx_1_trs on tbl_real_stair (stair_cd,bagic_tbl,chapter);		
+CREATE index idx_2_trs on tbl_real_stair (stair_cd,bagic_tbl);
 
 	
 CREATE TABLE public.tbl_vr1_stair (
-	vrstair_cd varchar(100) NOT NULL,
-	bagic_vrstair_cd varchar(100) NOT NULL,
+	stair_cd varchar(100) NOT NULL,
+	bagic_stair_cd varchar(100) NOT NULL,
 	bagic_idx int4 NOT NULL,
 	chapter int4 NOT NULL,
 	num1 int4 NOT NULL,
@@ -394,14 +395,14 @@ CREATE TABLE public.tbl_vr1_stair (
 	num43 int4 NOT NULL,
 	num44 int4 NOT NULL,
 	num45 int4 NOT NULL,
-	CONSTRAINT p_tv1s_chapter PRIMARY KEY (vrstair_cd,bagic_idx,bagic_vrstair_cd,chapter)
+	CONSTRAINT p_tv1s_chapter PRIMARY KEY (stair_cd,bagic_idx,bagic_stair_cd,chapter)
 );
-CREATE index idx_1_tv1s on tbl_vr1_stair (vrstair_cd,bagic_vrstair_cd,bagic_idx,chapter);		
-CREATE index idx_2_tv1s on tbl_vr1_stair (vrstair_cd,bagic_vrstair_cd,bagic_idx);
+CREATE index idx_1_tv1s on tbl_vr1_stair (stair_cd,bagic_stair_cd,bagic_idx,chapter);		
+CREATE index idx_2_tv1s on tbl_vr1_stair (stair_cd,bagic_stair_cd,bagic_idx);
 
 CREATE TABLE public.tbl_vr2_stair (
-	vrstair_cd varchar(100) NOT NULL,
-	bagic_vrstair_cd varchar(100) NOT NULL,
+	stair_cd varchar(100) NOT NULL,
+	bagic_stair_cd varchar(100) NOT NULL,
 	bagic_idx int4 NOT NULL,
 	chapter int4 NOT NULL,
 	num1 int4 NOT NULL,
@@ -449,7 +450,251 @@ CREATE TABLE public.tbl_vr2_stair (
 	num43 int4 NOT NULL,
 	num44 int4 NOT NULL,
 	num45 int4 NOT NULL,
-	CONSTRAINT p_tv2s_chapter PRIMARY KEY (vrstair_cd,bagic_vrstair_cd,bagic_idx,chapter)
-);
-CREATE index idx_1_tv2s on tbl_vr2_stair (vrstair_cd,bagic_vrstair_cd,bagic_idx,chapter);		
-CREATE index idx_2_tv2s on tbl_vr2_stair (vrstair_cd,bagic_vrstair_cd,bagic_idx);
+	CONSTRAINT p_tv2s_chapter PRIMARY KEY (stair_cd,bagic_stair_cd,bagic_idx,chapter)
+) PARTITION BY RANGE(stair_cd);
+
+CREATE index idx_1_tv2s on tbl_vr2_stair (stair_cd,bagic_stair_cd,bagic_idx,chapter);		
+CREATE index idx_2_tv2s on tbl_vr2_stair (stair_cd,bagic_stair_cd,bagic_idx);
+
+CREATE TABLE tbl_vr2_stair6_0_44 PARTITION OF tbl_vr2_stair FOR VALUES FROM ('stair6_0') TO ('stair6_45');
+CREATE TABLE tbl_vr2_oStair6_0_44 PARTITION OF tbl_vr2_stair FOR VALUES FROM ('oStair6_0') TO ('oStair6_45');
+CREATE TABLE tbl_vr2_stair7_0_44 PARTITION OF tbl_vr2_stair FOR VALUES FROM ('stair7_0') TO ('stair7_45');
+CREATE TABLE tbl_vr2_oStair7_0_44 PARTITION OF tbl_vr2_stair FOR VALUES FROM ('oStair7_0') TO ('oStair7_45');
+
+
+CREATE TABLE public.tbl_vr3_stair (
+	stair_cd varchar(100) NOT NULL,
+	bagic_stair_cd varchar(100) NOT NULL,
+	bagic_idx int4 NOT NULL,
+	chapter int4 NOT NULL,
+	num1 int4 NOT NULL,
+	num2 int4 NOT NULL,
+	num3 int4 NOT NULL,
+	num4 int4 NOT NULL,
+	num5 int4 NOT NULL,
+	num6 int4 NOT NULL,
+	num7 int4 NOT NULL,
+	num8 int4 NOT NULL,
+	num9 int4 NOT NULL,
+	num10 int4 NOT NULL,
+	num11 int4 NOT NULL,
+	num12 int4 NOT NULL,
+	num13 int4 NOT NULL,
+	num14 int4 NOT NULL,
+	num15 int4 NOT NULL,
+	num16 int4 NOT NULL,
+	num17 int4 NOT NULL,
+	num18 int4 NOT NULL,
+	num19 int4 NOT NULL,
+	num20 int4 NOT NULL,
+	num21 int4 NOT NULL,
+	num22 int4 NOT NULL,
+	num23 int4 NOT NULL,
+	num24 int4 NOT NULL,
+	num25 int4 NOT NULL,
+	num26 int4 NOT NULL,
+	num27 int4 NOT NULL,
+	num28 int4 NOT NULL,
+	num29 int4 NOT NULL,
+	num30 int4 NOT NULL,
+	num31 int4 NOT NULL,
+	num32 int4 NOT NULL,
+	num33 int4 NOT NULL,
+	num34 int4 NOT NULL,
+	num35 int4 NOT NULL,
+	num36 int4 NOT NULL,
+	num37 int4 NOT NULL,
+	num38 int4 NOT NULL,
+	num39 int4 NOT NULL,
+	num40 int4 NOT NULL,
+	num41 int4 NOT NULL,
+	num42 int4 NOT NULL,
+	num43 int4 NOT NULL,
+	num44 int4 NOT NULL,
+	num45 int4 NOT NULL,
+	CONSTRAINT p_tvr3s_chapter PRIMARY KEY (stair_cd,bagic_stair_cd,bagic_idx,chapter)
+) PARTITION BY RANGE(stair_cd);
+
+CREATE index idx_1_tvr3s on tbl_vr3_stair (stair_cd,bagic_stair_cd,bagic_idx,chapter);		
+CREATE index idx_2_tvr3s on tbl_vr3_stair (stair_cd,bagic_stair_cd,bagic_idx);
+
+CREATE TABLE tbl_vr3_stair6_0_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_0_0_0') TO ('stair6_0_99_99');
+CREATE TABLE tbl_vr3_stair6_1_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_1_0_0') TO ('stair6_1_99_99');
+CREATE TABLE tbl_vr3_stair6_2_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_2_0_0') TO ('stair6_2_99_99');
+CREATE TABLE tbl_vr3_stair6_3_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_3_0_0') TO ('stair6_3_99_99');
+CREATE TABLE tbl_vr3_stair6_4_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_4_0_0') TO ('stair6_4_99_99');
+CREATE TABLE tbl_vr3_stair6_5_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_5_0_0') TO ('stair6_5_99_99');
+CREATE TABLE tbl_vr3_stair6_6_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_6_0_0') TO ('stair6_6_99_99');
+CREATE TABLE tbl_vr3_stair6_7_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_7_0_0') TO ('stair6_7_99_99');
+CREATE TABLE tbl_vr3_stair6_8_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_8_0_0') TO ('stair6_8_99_99');
+CREATE TABLE tbl_vr3_stair6_9_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_9_0_0') TO ('stair6_9_99_99');
+CREATE TABLE tbl_vr3_stair6_10_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_10_0_0') TO ('stair6_10_99_99');
+CREATE TABLE tbl_vr3_stair6_11_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_11_0_0') TO ('stair6_11_99_99');
+CREATE TABLE tbl_vr3_stair6_12_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_12_0_0') TO ('stair6_12_99_99');
+CREATE TABLE tbl_vr3_stair6_13_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_13_0_0') TO ('stair6_13_99_99');
+CREATE TABLE tbl_vr3_stair6_14_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_14_0_0') TO ('stair6_14_99_99');
+CREATE TABLE tbl_vr3_stair6_15_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_15_0_0') TO ('stair6_15_99_99');
+CREATE TABLE tbl_vr3_stair6_16_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_16_0_0') TO ('stair6_16_99_99');
+CREATE TABLE tbl_vr3_stair6_17_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_17_0_0') TO ('stair6_17_99_99');
+CREATE TABLE tbl_vr3_stair6_18_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_18_0_0') TO ('stair6_18_99_99');
+CREATE TABLE tbl_vr3_stair6_19_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_19_0_0') TO ('stair6_19_99_99');
+CREATE TABLE tbl_vr3_stair6_20_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_20_0_0') TO ('stair6_20_99_99');
+CREATE TABLE tbl_vr3_stair6_21_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_21_0_0') TO ('stair6_21_99_99');
+CREATE TABLE tbl_vr3_stair6_22_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_22_0_0') TO ('stair6_22_99_99');
+CREATE TABLE tbl_vr3_stair6_23_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_23_0_0') TO ('stair6_23_99_99');
+CREATE TABLE tbl_vr3_stair6_24_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_24_0_0') TO ('stair6_24_99_99');
+CREATE TABLE tbl_vr3_stair6_25_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_25_0_0') TO ('stair6_25_99_99');
+CREATE TABLE tbl_vr3_stair6_26_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_26_0_0') TO ('stair6_26_99_99');
+CREATE TABLE tbl_vr3_stair6_27_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_27_0_0') TO ('stair6_27_99_99');
+CREATE TABLE tbl_vr3_stair6_28_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_28_0_0') TO ('stair6_28_99_99');
+CREATE TABLE tbl_vr3_stair6_29_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_29_0_0') TO ('stair6_29_99_99');
+CREATE TABLE tbl_vr3_stair6_30_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_30_0_0') TO ('stair6_30_99_99');
+CREATE TABLE tbl_vr3_stair6_31_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_31_0_0') TO ('stair6_31_99_99');
+CREATE TABLE tbl_vr3_stair6_32_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_32_0_0') TO ('stair6_32_99_99');
+CREATE TABLE tbl_vr3_stair6_33_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_33_0_0') TO ('stair6_33_99_99');
+CREATE TABLE tbl_vr3_stair6_34_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_34_0_0') TO ('stair6_34_99_99');
+CREATE TABLE tbl_vr3_stair6_35_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_35_0_0') TO ('stair6_35_99_99');
+CREATE TABLE tbl_vr3_stair6_36_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_36_0_0') TO ('stair6_36_99_99');
+CREATE TABLE tbl_vr3_stair6_37_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_37_0_0') TO ('stair6_37_99_99');
+CREATE TABLE tbl_vr3_stair6_38_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_38_0_0') TO ('stair6_38_99_99');
+CREATE TABLE tbl_vr3_stair6_39_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_39_0_0') TO ('stair6_39_99_99');
+CREATE TABLE tbl_vr3_stair6_40_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_40_0_0') TO ('stair6_40_99_99');
+CREATE TABLE tbl_vr3_stair6_41_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_41_0_0') TO ('stair6_41_99_99');
+CREATE TABLE tbl_vr3_stair6_42_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_42_0_0') TO ('stair6_42_99_99');
+CREATE TABLE tbl_vr3_stair6_43_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_43_0_0') TO ('stair6_43_99_99');
+CREATE TABLE tbl_vr3_stair6_44_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair6_44_0_0') TO ('stair6_44_99_99');
+CREATE TABLE tbl_vr3_oStair6_0_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_0_0_0') TO ('oStair6_0_99_99');
+CREATE TABLE tbl_vr3_oStair6_1_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_1_0_0') TO ('oStair6_1_99_99');
+CREATE TABLE tbl_vr3_oStair6_2_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_2_0_0') TO ('oStair6_2_99_99');
+CREATE TABLE tbl_vr3_oStair6_3_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_3_0_0') TO ('oStair6_3_99_99');
+CREATE TABLE tbl_vr3_oStair6_4_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_4_0_0') TO ('oStair6_4_99_99');
+CREATE TABLE tbl_vr3_oStair6_5_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_5_0_0') TO ('oStair6_5_99_99');
+CREATE TABLE tbl_vr3_oStair6_6_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_6_0_0') TO ('oStair6_6_99_99');
+CREATE TABLE tbl_vr3_oStair6_7_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_7_0_0') TO ('oStair6_7_99_99');
+CREATE TABLE tbl_vr3_oStair6_8_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_8_0_0') TO ('oStair6_8_99_99');
+CREATE TABLE tbl_vr3_oStair6_9_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_9_0_0') TO ('oStair6_9_99_99');
+CREATE TABLE tbl_vr3_oStair6_10_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_10_0_0') TO ('oStair6_10_99_99');
+CREATE TABLE tbl_vr3_oStair6_11_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_11_0_0') TO ('oStair6_11_99_99');
+CREATE TABLE tbl_vr3_oStair6_12_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_12_0_0') TO ('oStair6_12_99_99');
+CREATE TABLE tbl_vr3_oStair6_13_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_13_0_0') TO ('oStair6_13_99_99');
+CREATE TABLE tbl_vr3_oStair6_14_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_14_0_0') TO ('oStair6_14_99_99');
+CREATE TABLE tbl_vr3_oStair6_15_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_15_0_0') TO ('oStair6_15_99_99');
+CREATE TABLE tbl_vr3_oStair6_16_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_16_0_0') TO ('oStair6_16_99_99');
+CREATE TABLE tbl_vr3_oStair6_17_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_17_0_0') TO ('oStair6_17_99_99');
+CREATE TABLE tbl_vr3_oStair6_18_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_18_0_0') TO ('oStair6_18_99_99');
+CREATE TABLE tbl_vr3_oStair6_19_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_19_0_0') TO ('oStair6_19_99_99');
+CREATE TABLE tbl_vr3_oStair6_20_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_20_0_0') TO ('oStair6_20_99_99');
+CREATE TABLE tbl_vr3_oStair6_21_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_21_0_0') TO ('oStair6_21_99_99');
+CREATE TABLE tbl_vr3_oStair6_22_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_22_0_0') TO ('oStair6_22_99_99');
+CREATE TABLE tbl_vr3_oStair6_23_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_23_0_0') TO ('oStair6_23_99_99');
+CREATE TABLE tbl_vr3_oStair6_24_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_24_0_0') TO ('oStair6_24_99_99');
+CREATE TABLE tbl_vr3_oStair6_25_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_25_0_0') TO ('oStair6_25_99_99');
+CREATE TABLE tbl_vr3_oStair6_26_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_26_0_0') TO ('oStair6_26_99_99');
+CREATE TABLE tbl_vr3_oStair6_27_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_27_0_0') TO ('oStair6_27_99_99');
+CREATE TABLE tbl_vr3_oStair6_28_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_28_0_0') TO ('oStair6_28_99_99');
+CREATE TABLE tbl_vr3_oStair6_29_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_29_0_0') TO ('oStair6_29_99_99');
+CREATE TABLE tbl_vr3_oStair6_30_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_30_0_0') TO ('oStair6_30_99_99');
+CREATE TABLE tbl_vr3_oStair6_31_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_31_0_0') TO ('oStair6_31_99_99');
+CREATE TABLE tbl_vr3_oStair6_32_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_32_0_0') TO ('oStair6_32_99_99');
+CREATE TABLE tbl_vr3_oStair6_33_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_33_0_0') TO ('oStair6_33_99_99');
+CREATE TABLE tbl_vr3_oStair6_34_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_34_0_0') TO ('oStair6_34_99_99');
+CREATE TABLE tbl_vr3_oStair6_35_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_35_0_0') TO ('oStair6_35_99_99');
+CREATE TABLE tbl_vr3_oStair6_36_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_36_0_0') TO ('oStair6_36_99_99');
+CREATE TABLE tbl_vr3_oStair6_37_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_37_0_0') TO ('oStair6_37_99_99');
+CREATE TABLE tbl_vr3_oStair6_38_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_38_0_0') TO ('oStair6_38_99_99');
+CREATE TABLE tbl_vr3_oStair6_39_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_39_0_0') TO ('oStair6_39_99_99');
+CREATE TABLE tbl_vr3_oStair6_40_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_40_0_0') TO ('oStair6_40_99_99');
+CREATE TABLE tbl_vr3_oStair6_41_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_41_0_0') TO ('oStair6_41_99_99');
+CREATE TABLE tbl_vr3_oStair6_42_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_42_0_0') TO ('oStair6_42_99_99');
+CREATE TABLE tbl_vr3_oStair6_43_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_43_0_0') TO ('oStair6_43_99_99');
+CREATE TABLE tbl_vr3_oStair6_44_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair6_44_0_0') TO ('oStair6_44_99_99');
+CREATE TABLE tbl_vr3_stair7_0_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_0_0_0') TO ('stair7_0_99_99');
+CREATE TABLE tbl_vr3_stair7_1_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_1_0_0') TO ('stair7_1_99_99');
+CREATE TABLE tbl_vr3_stair7_2_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_2_0_0') TO ('stair7_2_99_99');
+CREATE TABLE tbl_vr3_stair7_3_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_3_0_0') TO ('stair7_3_99_99');
+CREATE TABLE tbl_vr3_stair7_4_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_4_0_0') TO ('stair7_4_99_99');
+CREATE TABLE tbl_vr3_stair7_5_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_5_0_0') TO ('stair7_5_99_99');
+CREATE TABLE tbl_vr3_stair7_6_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_6_0_0') TO ('stair7_6_99_99');
+CREATE TABLE tbl_vr3_stair7_7_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_7_0_0') TO ('stair7_7_99_99');
+CREATE TABLE tbl_vr3_stair7_8_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_8_0_0') TO ('stair7_8_99_99');
+CREATE TABLE tbl_vr3_stair7_9_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_9_0_0') TO ('stair7_9_99_99');
+CREATE TABLE tbl_vr3_stair7_10_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_10_0_0') TO ('stair7_10_99_99');
+CREATE TABLE tbl_vr3_stair7_11_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_11_0_0') TO ('stair7_11_99_99');
+CREATE TABLE tbl_vr3_stair7_12_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_12_0_0') TO ('stair7_12_99_99');
+CREATE TABLE tbl_vr3_stair7_13_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_13_0_0') TO ('stair7_13_99_99');
+CREATE TABLE tbl_vr3_stair7_14_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_14_0_0') TO ('stair7_14_99_99');
+CREATE TABLE tbl_vr3_stair7_15_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_15_0_0') TO ('stair7_15_99_99');
+CREATE TABLE tbl_vr3_stair7_16_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_16_0_0') TO ('stair7_16_99_99');
+CREATE TABLE tbl_vr3_stair7_17_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_17_0_0') TO ('stair7_17_99_99');
+CREATE TABLE tbl_vr3_stair7_18_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_18_0_0') TO ('stair7_18_99_99');
+CREATE TABLE tbl_vr3_stair7_19_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_19_0_0') TO ('stair7_19_99_99');
+CREATE TABLE tbl_vr3_stair7_20_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_20_0_0') TO ('stair7_20_99_99');
+CREATE TABLE tbl_vr3_stair7_21_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_21_0_0') TO ('stair7_21_99_99');
+CREATE TABLE tbl_vr3_stair7_22_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_22_0_0') TO ('stair7_22_99_99');
+CREATE TABLE tbl_vr3_stair7_23_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_23_0_0') TO ('stair7_23_99_99');
+CREATE TABLE tbl_vr3_stair7_24_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_24_0_0') TO ('stair7_24_99_99');
+CREATE TABLE tbl_vr3_stair7_25_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_25_0_0') TO ('stair7_25_99_99');
+CREATE TABLE tbl_vr3_stair7_26_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_26_0_0') TO ('stair7_26_99_99');
+CREATE TABLE tbl_vr3_stair7_27_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_27_0_0') TO ('stair7_27_99_99');
+CREATE TABLE tbl_vr3_stair7_28_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_28_0_0') TO ('stair7_28_99_99');
+CREATE TABLE tbl_vr3_stair7_29_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_29_0_0') TO ('stair7_29_99_99');
+CREATE TABLE tbl_vr3_stair7_30_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_30_0_0') TO ('stair7_30_99_99');
+CREATE TABLE tbl_vr3_stair7_31_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_31_0_0') TO ('stair7_31_99_99');
+CREATE TABLE tbl_vr3_stair7_32_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_32_0_0') TO ('stair7_32_99_99');
+CREATE TABLE tbl_vr3_stair7_33_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_33_0_0') TO ('stair7_33_99_99');
+CREATE TABLE tbl_vr3_stair7_34_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_34_0_0') TO ('stair7_34_99_99');
+CREATE TABLE tbl_vr3_stair7_35_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_35_0_0') TO ('stair7_35_99_99');
+CREATE TABLE tbl_vr3_stair7_36_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_36_0_0') TO ('stair7_36_99_99');
+CREATE TABLE tbl_vr3_stair7_37_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_37_0_0') TO ('stair7_37_99_99');
+CREATE TABLE tbl_vr3_stair7_38_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_38_0_0') TO ('stair7_38_99_99');
+CREATE TABLE tbl_vr3_stair7_39_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_39_0_0') TO ('stair7_39_99_99');
+CREATE TABLE tbl_vr3_stair7_40_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_40_0_0') TO ('stair7_40_99_99');
+CREATE TABLE tbl_vr3_stair7_41_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_41_0_0') TO ('stair7_41_99_99');
+CREATE TABLE tbl_vr3_stair7_42_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_42_0_0') TO ('stair7_42_99_99');
+CREATE TABLE tbl_vr3_stair7_43_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_43_0_0') TO ('stair7_43_99_99');
+CREATE TABLE tbl_vr3_stair7_44_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('stair7_44_0_0') TO ('stair7_44_99_99');
+CREATE TABLE tbl_vr3_oStair7_0_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_0_0_0') TO ('oStair7_0_99_99');
+CREATE TABLE tbl_vr3_oStair7_1_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_1_0_0') TO ('oStair7_1_99_99');
+CREATE TABLE tbl_vr3_oStair7_2_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_2_0_0') TO ('oStair7_2_99_99');
+CREATE TABLE tbl_vr3_oStair7_3_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_3_0_0') TO ('oStair7_3_99_99');
+CREATE TABLE tbl_vr3_oStair7_4_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_4_0_0') TO ('oStair7_4_99_99');
+CREATE TABLE tbl_vr3_oStair7_5_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_5_0_0') TO ('oStair7_5_99_99');
+CREATE TABLE tbl_vr3_oStair7_6_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_6_0_0') TO ('oStair7_6_99_99');
+CREATE TABLE tbl_vr3_oStair7_7_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_7_0_0') TO ('oStair7_7_99_99');
+CREATE TABLE tbl_vr3_oStair7_8_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_8_0_0') TO ('oStair7_8_99_99');
+CREATE TABLE tbl_vr3_oStair7_9_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_9_0_0') TO ('oStair7_9_99_99');
+CREATE TABLE tbl_vr3_oStair7_10_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_10_0_0') TO ('oStair7_10_99_99');
+CREATE TABLE tbl_vr3_oStair7_11_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_11_0_0') TO ('oStair7_11_99_99');
+CREATE TABLE tbl_vr3_oStair7_12_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_12_0_0') TO ('oStair7_12_99_99');
+CREATE TABLE tbl_vr3_oStair7_13_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_13_0_0') TO ('oStair7_13_99_99');
+CREATE TABLE tbl_vr3_oStair7_14_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_14_0_0') TO ('oStair7_14_99_99');
+CREATE TABLE tbl_vr3_oStair7_15_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_15_0_0') TO ('oStair7_15_99_99');
+CREATE TABLE tbl_vr3_oStair7_16_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_16_0_0') TO ('oStair7_16_99_99');
+CREATE TABLE tbl_vr3_oStair7_17_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_17_0_0') TO ('oStair7_17_99_99');
+CREATE TABLE tbl_vr3_oStair7_18_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_18_0_0') TO ('oStair7_18_99_99');
+CREATE TABLE tbl_vr3_oStair7_19_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_19_0_0') TO ('oStair7_19_99_99');
+CREATE TABLE tbl_vr3_oStair7_20_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_20_0_0') TO ('oStair7_20_99_99');
+CREATE TABLE tbl_vr3_oStair7_21_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_21_0_0') TO ('oStair7_21_99_99');
+CREATE TABLE tbl_vr3_oStair7_22_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_22_0_0') TO ('oStair7_22_99_99');
+CREATE TABLE tbl_vr3_oStair7_23_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_23_0_0') TO ('oStair7_23_99_99');
+CREATE TABLE tbl_vr3_oStair7_24_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_24_0_0') TO ('oStair7_24_99_99');
+CREATE TABLE tbl_vr3_oStair7_25_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_25_0_0') TO ('oStair7_25_99_99');
+CREATE TABLE tbl_vr3_oStair7_26_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_26_0_0') TO ('oStair7_26_99_99');
+CREATE TABLE tbl_vr3_oStair7_27_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_27_0_0') TO ('oStair7_27_99_99');
+CREATE TABLE tbl_vr3_oStair7_28_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_28_0_0') TO ('oStair7_28_99_99');
+CREATE TABLE tbl_vr3_oStair7_29_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_29_0_0') TO ('oStair7_29_99_99');
+CREATE TABLE tbl_vr3_oStair7_30_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_30_0_0') TO ('oStair7_30_99_99');
+CREATE TABLE tbl_vr3_oStair7_31_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_31_0_0') TO ('oStair7_31_99_99');
+CREATE TABLE tbl_vr3_oStair7_32_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_32_0_0') TO ('oStair7_32_99_99');
+CREATE TABLE tbl_vr3_oStair7_33_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_33_0_0') TO ('oStair7_33_99_99');
+CREATE TABLE tbl_vr3_oStair7_34_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_34_0_0') TO ('oStair7_34_99_99');
+CREATE TABLE tbl_vr3_oStair7_35_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_35_0_0') TO ('oStair7_35_99_99');
+CREATE TABLE tbl_vr3_oStair7_36_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_36_0_0') TO ('oStair7_36_99_99');
+CREATE TABLE tbl_vr3_oStair7_37_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_37_0_0') TO ('oStair7_37_99_99');
+CREATE TABLE tbl_vr3_oStair7_38_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_38_0_0') TO ('oStair7_38_99_99');
+CREATE TABLE tbl_vr3_oStair7_39_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_39_0_0') TO ('oStair7_39_99_99');
+CREATE TABLE tbl_vr3_oStair7_40_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_40_0_0') TO ('oStair7_40_99_99');
+CREATE TABLE tbl_vr3_oStair7_41_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_41_0_0') TO ('oStair7_41_99_99');
+CREATE TABLE tbl_vr3_oStair7_42_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_42_0_0') TO ('oStair7_42_99_99');
+CREATE TABLE tbl_vr3_oStair7_43_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_43_0_0') TO ('oStair7_43_99_99');
+CREATE TABLE tbl_vr3_oStair7_44_0_0 PARTITION OF tbl_vr3_stair FOR VALUES FROM ('oStair7_44_0_0') TO ('oStair7_44_99_99');
