@@ -1,0 +1,117 @@
+package com.mvc.fml;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.cont.VerifyCont;
+import com.mvc.dao.FmlDao;
+import com.util.CmmUtil;
+
+@Service
+public class FmlNotOver {
+	
+	@Autowired
+	FmlDao fmlDao;
+	
+	private static Logger logger = Logger.getLogger(FmlNotOver.class.getName());
+	
+	public Map<String,Object> notOver(Map<String,Object> fmlInfoMap,List<Map<String, Object>> selAllWinList) {
+		Map<String,Object> rtnInfo = new HashMap<String,Object>();
+		String fml_cd = String.valueOf(fmlInfoMap.get("fml_cd"));
+		try {
+				
+				String fml_group = String.valueOf(fmlInfoMap.get("fml_group"));
+				String fml_judg = String.valueOf(fmlInfoMap.get("fml_judg"));
+				int check_chapter = Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter")));
+				int rang_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("rang_cnt")));
+				int inc_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("inc_cnt")));
+				if(check_chapter < 50) {
+					check_chapter = 50;
+				}
+				
+				
+				Map<String,Object> chkMap = null;
+				Map<String,Object> winnerMap = null;
+				Map<String,Object> newFmlMap = new HashMap<String,Object>();
+				int[] chkArray = null;
+				int[] selAllWinArray = null;
+				int notOverCnt = 0;
+				boolean bln_insNewChapter = false;
+				// winner_chapter 한칸 전까지
+				// inc_cnt 낮음에서 높음으로
+				newFmlMap.putAll(fmlInfoMap);
+				newFmlMap.put("fml_cd", fml_group+"_"+fml_judg+"_"+rang_cnt+"_"+(inc_cnt+1));
+				newFmlMap.put("inc_cnt", inc_cnt+1);
+				
+				//새로운 내용 있는지 확인 
+				
+				if(fmlDao.selNewFml(newFmlMap) == null  //기존에 내용이 없어야 하며
+						&& Integer.parseInt(String.valueOf(newFmlMap.get("inc_cnt"))) < 7 //포함은 6개이상 될수가 없고 
+						&& Integer.parseInt(String.valueOf(newFmlMap.get("inc_cnt"))) <= Integer.parseInt(String.valueOf(newFmlMap.get("rang_cnt"))) //포함 숫자는 기본 범위를 넘을 수 없다 
+						) {
+					bln_insNewChapter = true;
+				}
+				
+				//fmlInfoMap.get("fml_tbl") 이 from 절에 table 됨 stair
+				fmlInfoMap.put("stair_cd",fml_group);
+				List<Map<String,Object>> chkList =  fmlDao.selFmlInfoList(fmlInfoMap);
+				int chk_idx = 0;
+				// 계단식 마지막은 이번에 도전해야하는 자료..
+				for(int i = check_chapter ; i < selAllWinList.size()-1 ; i++) {// winner_chapter 한칸 전까지 why....stair 나온걸로 다음 회차당첨여부를 확인해야하니!!확인 할 것이 있어야 한다!
+					
+					chkMap = chkList.get(chk_idx);
+					chk_idx++;
+					//계단식 
+					if(chkMap != null) {
+						
+						winnerMap = selAllWinList.get(i+1);
+						
+						chkArray = CmmUtil.map45ToIntArray(chkMap);
+						selAllWinArray = CmmUtil.map6ToIntArray(winnerMap);
+						notOverCnt = 0;
+						
+						for(int j = 0 ; j < 45 ; j++) {
+							for(int k = 0 ; k < 6 ; k++ ) {
+								if(chkArray[j] == selAllWinArray[k]) {
+									notOverCnt++;
+								}
+							}
+							
+							if((j+1)%rang_cnt == 0) {
+								if(notOverCnt >= inc_cnt) {
+									//에러식 증가
+									//to-do : 히스토리 남기고 세부내용 증가 시켜야 함.
+									fmlInfoMap.put("err_last_chapter", i+1);
+									fmlInfoMap.put("err_cnt", Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")))+1);
+									if(bln_insNewChapter){
+										fmlDao.insNewFml(newFmlMap);
+										bln_insNewChapter = false;
+										//VerifyCont.VERIFY_CHECK_LIST 에 새로운 내용을 추가 해서 FOR문을 더 이어갈려 했지만 불가능 
+										//VerifyCont.VERIFY_CHECK_LIST.add(newFmlMap);
+									}
+									notOverCnt = 0;
+									break;
+								}
+								notOverCnt = 0;
+							}
+						}
+						fmlInfoMap.put("check_chapter", i+1);
+					}
+				}
+				fmlInfoMap.put("state", "com");
+				int err_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")));
+				fmlInfoMap.put("avg",err_cnt == 0 ? 0 : Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter"))) / err_cnt );
+				fmlDao.udpFmlCheckInfo(fmlInfoMap);
+		}catch(Exception ex) {
+			logger.info("@@@@@@ NOTOVER ERROR3 "+fml_cd+":"+ ex.toString());
+		}
+	 	
+        return rtnInfo;
+	}
+		
+}
