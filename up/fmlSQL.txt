@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvc.dao.FmlDao">
+	
+	
+	<select id="selFmlBagicList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT	*
+			FROM 	TBL_FML_BAGIC
+			WHERE  	1=1
+			AND 	USE_YN = 'Y'
+			<choose>
+	            <when test="fml_judg_desc_list.size != 0">
+	                AND FML_JUDG_DESC IN 
+	                <foreach collection="fml_judg_desc_list" item="item" index="index" separator="," open="(" close=")">
+	                    #{item}
+	                </foreach>
+	            </when>
+        </choose>
+	</select>
+	
+	<select id="selFmlInfoList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT	*
+			FROM 	${fml_tbl}
+			WHERE  	CHAPTER >= #{check_chapter}
+			AND		STAIR_CD = #{stair_cd}
+			ORDER BY CHAPTER
+	</select>
+	
+	<select id="selNewFml" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT 	* 
+			FROM 	TBL_FML 
+			WHERE 	FML_CD 	= #{fml_cd}
+	</select>
+	
+	<insert id="insNewFml" parameterType="java.util.Map" >
+	
+		INSERT INTO TBL_FML (FML_CD
+								, FML_GROUP
+								, FML_JUDG
+								, FML_TBL
+								, CHECK_CHAPTER
+								, STATE
+								, RANG_CNT
+								, INC_CNT
+								, USE_YN
+								, ERR_LAST_CHAPTER
+								, ERR_CNT
+								, AVG
+								, POINT)
+					VALUES (#{fml_cd}
+								, #{fml_group}
+								, #{fml_judg}
+								, #{fml_tbl}
+								, 0
+								, 'stop'
+								, #{rang_cnt}
+								, #{inc_cnt}
+								, 'Y'
+								, 0
+								, 0
+								, 0
+								, 100)
+		ON CONFLICT (FML_CD)
+		DO NOTHING
+	</insert>
+	
+	<update  id="udpFmlCheckInfo" parameterType="java.util.Map" >
+			UPDATE  TBL_FML SET CHECK_CHAPTER = #{check_chapter}
+								, ERR_LAST_CHAPTER = #{err_last_chapter} 
+								, STATE = #{state}
+								, ERR_CNT = #{err_cnt}
+								, AVG = #{avg}
+			WHERE 	FML_CD = #{fml_cd}
+	</update>
+	
+	
+	<select id="selRealStairStairCdList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT 	DISTINCT STAIR_CD
+			FROM 	TBL_REAL_STAIR 
+			ORDER BY  STAIR_CD
+	</select>
+	
+	<select id="selVr1StairStairCdList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT 	DISTINCT STAIR_CD
+			FROM 	TBL_VR1_STAIR
+			ORDER BY  STAIR_CD
+	</select>
+	
+	<select id="selVr2StairStairCdList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT 	DISTINCT STAIR_CD
+			FROM 	TBL_VR2_STAIR 
+			ORDER BY  STAIR_CD
+	</select>
+	
+	<select id="selVr3StairStairCdList" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT 	DISTINCT STAIR_CD
+			FROM 	TBL_VR3_STAIR 
+			ORDER BY  STAIR_CD
+	</select>
+	
+</mapper> 
