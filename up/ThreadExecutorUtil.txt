@@ -1,0 +1,54 @@
+package com.core;
+
+import java.util.logging.Logger;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
+import com.cont.CmmCont;
+
+
+@EnableAsync
+@Configuration
+public class ThreadExecutorUtil{
+
+	private Logger logger = Logger.getLogger(ThreadExecutorUtil.class.getName());
+	
+	@Bean(name="threadExcutor")
+	public ThreadPoolTaskExecutor threadExcutor() {
+		 ThreadPoolTaskExecutor threadExcutor = new ThreadPoolTaskExecutor();
+	        // 기본 스레드 수만큼 실행하다 더 많은 요청이 오면  queue 에 임시 저장 또 요청 시 maxPool 만큼
+	        // 기본 스레드 수
+		 threadExcutor.setCorePoolSize(CmmCont.VERIFY_THREAD_TOTAL_COUNT);
+	        // Queue 사이즈
+		 threadExcutor.setQueueCapacity(CmmCont.VERIFY_THREAD_TOTAL_COUNT);
+	        // 최대 스레드 수
+		 threadExcutor.setMaxPoolSize(CmmCont.VERIFY_THREAD_TOTAL_COUNT * 10);
+	        //executor.setThreadNamePrefix("");
+		 //threadExcutor.setWaitForTasksToCompleteOnShutdown(true);
+	        //taskExecutor.setAwaitTerminationSeconds(60);// shutdown 최대 60초 대기
+		 threadExcutor.initialize();
+		return threadExcutor;
+	}
+	
+	@Bean(name="stairthreadExcutor")
+	public ThreadPoolTaskExecutor stairthreadExcutor() {
+		 ThreadPoolTaskExecutor threadExcutor = new ThreadPoolTaskExecutor();
+	        // 기본 스레드 수만큼 실행하다 더 많은 요청이 오면  queue 에 임시 저장 또 요청 시 maxPool 만큼
+	        // 기본 스레드 수
+		 threadExcutor.setCorePoolSize(CmmCont.MAKE_STAIR_THREAD_TOTAL_COUNT);
+	        // Queue 사이즈
+		 threadExcutor.setQueueCapacity(CmmCont.MAKE_STAIR_THREAD_TOTAL_COUNT/2);
+	        // 최대 스레드 수
+		 threadExcutor.setMaxPoolSize(CmmCont.MAKE_STAIR_THREAD_TOTAL_COUNT*3);
+	        //executor.setThreadNamePrefix("");
+		 //threadExcutor.setWaitForTasksToCompleteOnShutdown(true);
+	        //taskExecutor.setAwaitTerminationSeconds(60);// shutdown 최대 60초 대기
+		 threadExcutor.initialize();
+		return threadExcutor;
+	}
+	
+
+}
