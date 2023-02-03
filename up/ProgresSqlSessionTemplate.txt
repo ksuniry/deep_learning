@@ -1,0 +1,70 @@
+package com.core;
+
+import javax.sql.DataSource;
+
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+@Configuration
+public class ProgresSqlSessionTemplate {
+
+@Configuration
+public class HikariDataSourcePostgre {
+	
+    private final ApplicationContext appCtx;
+
+    public HikariDataSourcePostgre(ApplicationContext appCtx) {
+        this.appCtx = appCtx;
+    }
+    
+    @Bean(name="hikariPostgreDataSourceConfig")
+    @ConfigurationProperties(prefix="spring.datasource")
+    public HikariConfig  hikariConfig() {
+        return new HikariConfig();
+    }
+
+    @Bean(name="hikariPosgreDataSource")
+    @ConfigurationProperties("spring.datasource.hikari")
+    public HikariDataSource hikariDataSource(@Qualifier("hikariPostgreDataSourceConfig") HikariConfig hikariConfig) {
+    	hikariConfig.validate();
+    	hikariConfig.copyStateTo(hikariConfig);
+    	HikariDataSource dataSource ;
+    	try {
+    		dataSource = new HikariDataSource(hikariConfig);
+    	}catch (Exception e) {
+			// TODO: handle exception
+    		dataSource = new HikariDataSource();
+		}
+    	
+        return dataSource;
+    }
+	
+    
+    @Bean(name="hikariPostgreSqlSessionFactory")
+    @Primary
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("hikariPosgreDataSource") HikariDataSource hikariDataSource) throws Exception {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(hikariDataSource);
+        sqlSessionFactoryBean.setMapperLocations(appCtx.getResources("classpath:mapper/**/*SQL.xml") );
+        sqlSessionFactoryBean.setConfigLocation(appCtx.getResource("classpath:mybatis-config.xml"));
+        return sqlSessionFactoryBean.getObject();
+    }
+
+    @Bean(name="sqlSession")
+    @Primary
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("hikariPostgreSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+        return new SqlSessionTemplate(sqlSessionFactory);
+    } 
+}
+
+}
