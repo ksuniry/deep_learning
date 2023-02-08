@@ -27,11 +27,12 @@ public class FmlNotOver {
 				
 				String fml_group = String.valueOf(fmlInfoMap.get("fml_group"));
 				String fml_judg = String.valueOf(fmlInfoMap.get("fml_judg"));
-				int check_chapter = Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter")));
+				int check_max_chapter = Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter")));
+				int all_win_size = 0;
 				int rang_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("rang_cnt")));
 				int inc_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("inc_cnt")));
-				if(check_chapter < 50) {
-					check_chapter = 50;
+				if(check_max_chapter < 50) {
+					check_max_chapter = 50;
 				}
 				
 				
@@ -59,17 +60,22 @@ public class FmlNotOver {
 				
 				//fmlInfoMap.get("fml_tbl") 이 from 절에 table 됨 stair
 				fmlInfoMap.put("stair_cd",fml_group);
+				//WHERE  	CHAPTER >= #{check_chapter} AND		STAIR_CD = #{stair_cd}
 				List<Map<String,Object>> chkList =  fmlDao.selFmlInfoList(fmlInfoMap);
 				int chk_idx = 0;
 				// 계단식 마지막은 이번에 도전해야하는 자료..
-				for(int i = check_chapter ; i < selAllWinList.size()-1 ; i++) {// winner_chapter 한칸 전까지 why....stair 나온걸로 다음 회차당첨여부를 확인해야하니!!확인 할 것이 있어야 한다!
-					
-					chkMap = chkList.get(chk_idx);
+				all_win_size = selAllWinList.size();
+				for(int i = check_max_chapter ; i < all_win_size ; i++) {// winner_chapter 한칸 전까지 why....stair 나온걸로 다음 회차당첨여부를 확인해야하니!!확인 할 것이 있어야 한다!
+					//chkList의 0번째 idx는  check_chapter max이니 50 이고
+					// 그러므로 마지막 check_chapter 부터 다시한번 체크함
 					chk_idx++;
+					chkMap = chkList.get(chk_idx);
+					
 					//계단식 
 					if(chkMap != null) {
-						
-						winnerMap = selAllWinList.get(i+1);
+						//i=50 이면
+						// winnerMap chapter는 51일테고
+						winnerMap = selAllWinList.get(i);
 						
 						chkArray = CmmUtil.map45ToIntArray(chkMap);
 						selAllWinArray = CmmUtil.map6ToIntArray(winnerMap);
@@ -86,7 +92,7 @@ public class FmlNotOver {
 								if(notOverCnt >= inc_cnt) {
 									//에러식 증가
 									//to-do : 히스토리 남기고 세부내용 증가 시켜야 함.
-									fmlInfoMap.put("err_last_chapter", i+1);
+									fmlInfoMap.put("err_last_chapter", winnerMap.get("chapter"));
 									fmlInfoMap.put("err_cnt", Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")))+1);
 									if(bln_insNewChapter){
 										fmlDao.insNewFml(newFmlMap);
@@ -100,12 +106,50 @@ public class FmlNotOver {
 								notOverCnt = 0;
 							}
 						}
-						fmlInfoMap.put("check_chapter", i+1);
+						fmlInfoMap.put("check_chapter", winnerMap.get("chapter"));
 					}
 				}
 				fmlInfoMap.put("state", "com");
+				int check_chapter = Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter")));
+				int err_last_chapter =  Integer.parseInt(String.valueOf(fmlInfoMap.get("err_last_chapter")));
 				int err_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")));
-				fmlInfoMap.put("avg",err_cnt == 0 ? 0 : Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter"))) / err_cnt );
+				int avg =  (err_cnt == 0 ? 0 : Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter"))) / err_cnt);
+				
+				int point_distance = (check_chapter - err_last_chapter - avg);
+				int point_temp =  (int)(err_cnt == 0 ? 100 : Math.ceil(Double.parseDouble(String.valueOf(100/check_chapter/err_cnt))));
+				
+				fmlInfoMap.put("avg",avg);
+				int point = 0;
+				
+				if(avg == 1) {
+					point = 1;
+				}else if(avg == 2) {
+					point = ;
+				}
+				if(point_distance > 0) {
+					//기한이 지난
+					if(point_distance == 1) {
+						point = 1;
+					}else {
+						
+					}else {
+						
+					}
+				}else if(point_distance == 0){
+					point = 100;
+				}else {
+					
+					//아직 먼
+					if(avg < 10) {
+						
+					}else {
+						
+					}
+					if(check_chapter - err_last_chapter) {
+						
+					}
+				}
+				
 				fmlDao.udpFmlCheckInfo(fmlInfoMap);
 		}catch(Exception ex) {
 			logger.info("@@@@@@ NOTOVER ERROR3 "+fml_cd+":"+ ex.toString());
@@ -115,3 +159,4 @@ public class FmlNotOver {
 	}
 		
 }
+
