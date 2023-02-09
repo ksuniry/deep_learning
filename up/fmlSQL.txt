@@ -100,4 +100,12 @@
 			ORDER BY  STAIR_CD
 	</select>
 	
+	<insert id="insFmlHis" parameterType="java.util.Map" >
+	
+		INSERT INTO TBL_FML_HIS (FML_CD
+								, ERR_CHAPTER)
+						VALUES (#{fml_cd}
+								, #{err_chapter})
+	</insert>
+	
 </mapper> 

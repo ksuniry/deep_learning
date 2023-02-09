@@ -78,7 +78,7 @@ public class Fml {
 				fmlDao.insNewFml(ins_params);
 				make_cnt++;
 			}
-			
+			/*
 			fml_cd_list = fmlDao.selVr3StairStairCdList();
 			for(Map<String,Object> fml_cd_map : fml_cd_list) {
 				fml_cd = String.valueOf(fml_cd_map.get("stair_cd"))+"_"+fmlBagic.get("fml_judg_cd")+"_"+fmlBagic.get("rang_cnt")+"_"+fmlBagic.get("inc_cnt");
@@ -92,8 +92,75 @@ public class Fml {
 				fmlDao.insNewFml(ins_params);
 				make_cnt++;
 			}
+			*/
 		}
 		
 		return make_cnt;
+	}
+	
+	public int fmlMakeMinusPoint(Map<String,Object> fmlInfo, int effect) {
+
+		int check_chapter = Integer.parseInt(String.valueOf(fmlInfo.get("check_chapter")));
+		int err_last_chapter =  Integer.parseInt(String.valueOf(fmlInfo.get("err_last_chapter")));
+		int avg =  Integer.parseInt(String.valueOf(fmlInfo.get("avg")));
+		int err_cnt =  Integer.parseInt(String.valueOf(fmlInfo.get("err_cnt")));
+		
+		int point_distance = (check_chapter - err_last_chapter - avg);
+		// 임시 포인트
+		//int point_temp =  (int)(err_cnt == 0 ? 100 : Math.floor(Double.parseDouble(String.valueOf(100/check_chapter/err_cnt))));
+		int point = 100;
+		
+		// 일단 마이너스를 한다.
+		if(avg == 0 && err_cnt == 0) {
+			point = 100;
+		}else if(avg <3) {
+			point = -1;
+		}
+		//else if(){
+			// 값이 커지면 출현 가능성이 낮은거  작으면 출현 가능성이 큰거 그런데 avg가 크면 당연히 Good  그러므로 
+			// avg를 up 시킨다
+			//int point_rate = (avg- (check_chapter - err_last_chapter))*3;
+			
+			
+				
+			
+		//}
+		// avg 범위가 중요하다..가중치 .. 낮을 수록 가중치는 낮다.
+		// 마지막 error chapter 와 현재 chapter 간에 차이가 avg 범위에 속해 있는지  
+		// 마지막 check_chapter에 가까울 수록 가중치는 낮다.
+		// avg가 
+		
+		
+		
+		/*
+		 point = point_temp / (check_chapter - err_last_chapter)*100; 
+		
+		if(point_distance > 0) {
+			//기한이 지난
+			if(point_distance == 1) {
+				point = -1;
+			}else if(point_distance == 1) {
+				
+			}else if(point_distance == 1){
+				
+			}
+		}else if(point_distance == 0){
+			point = 100;
+		}else {
+			
+			//아직 먼
+			if(avg < 10) {
+				
+			}else {
+				
+			}
+			if(check_chapter - err_last_chapter > 0) {
+				
+			}
+		}
+		
+		point *= effect;
+		*/
+		return 0;
 	}
 }

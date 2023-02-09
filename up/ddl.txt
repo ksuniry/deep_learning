@@ -273,7 +273,7 @@ COMMIT;
 CREATE TABLE public.TBL_fml_his (
 	fml_cd varchar(30) NOT NULL,
 	err_chapter int4 NOT NULL,
-	CONSTRAINT p_tfh_chapter PRIMARY KEY (fml_cd)
+	CONSTRAINT p_tfh_chapter PRIMARY KEY (fml_cd,err_chapter)
 );
 
 

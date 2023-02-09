@@ -70,10 +70,11 @@ public class VerifyController extends Thread{
 	        	
 	        	paramMap.put("limit",empty_cnt < 1 ? 1 : empty_cnt);
 	        	List<Map<String,Object>> verifyList =  verifyService.selectVerifyList(paramMap);
-	        	logger.info("==============================");
-				logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD SIZE : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size()+" / "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.keySet().size());
-				logger.info("==============================");
+	        	
 	        	if(verifyList != null && verifyList.size() > 0) {
+	        		logger.info("==============================");
+					logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD SIZE : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size());
+					logger.info("==============================");
 	        		if(empty_cnt > 0) {
 	                	for(int i = 0 ; i < verifyList.size() ; i++ ) {
 	                		verifyInfoMap = verifyList.get(i);
@@ -82,6 +83,9 @@ public class VerifyController extends Thread{
 	                	}
 	        		}
 	        	}else{
+	        		logger.info("==============================");
+					logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD ToString : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.toString());
+					logger.info("==============================");
 	        		if("{}".equals(VerifyCont.VERIFY_ACTIVE_THREAD_MAP.toString())) {
 	        			VerifyCont.VERIFY_ACTIVE = false;
 	        			break;

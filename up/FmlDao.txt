@@ -66,6 +66,11 @@ public class FmlDao {
 		return sqlSession.selectList(name_space+".selVr3StairStairCdList");
 	}
 	
+	public int insFmlHis(Map<String,Object> params){
+		
+		return sqlSession.insert(name_space+".insFmlHis", params);
+	}
+	
 	
 	
 	

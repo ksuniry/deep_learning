@@ -8,7 +8,7 @@
 		SELECT 	* 
 		FROM 	TBL_FML 
 		WHERE 	1=1	
-		AND		(CHECK_CHAPTER <![CDATA[<]]>  #{max_chapter-1}  OR  STATE != 'com')
+		AND		(CHECK_CHAPTER <![CDATA[<]]>  #{max_chapter}  OR  STATE != 'com')
 		AND		USE_YN = 'Y'
 		LIMIT   #{limit}
 	</select>
