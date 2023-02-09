@@ -78,8 +78,10 @@ public class VerifyController extends Thread{
 	        		if(empty_cnt > 0) {
 	                	for(int i = 0 ; i < verifyList.size() ; i++ ) {
 	                		verifyInfoMap = verifyList.get(i);
-	                		VerifyCont.VERIFY_ACTIVE_THREAD_MAP.put(String.valueOf(verifyInfoMap.get("fml_cd")),System.currentTimeMillis());
-	                		verifyThreadCreate(verifyInfoMap, selAllWinList);
+	                		if(!VerifyCont.VERIFY_ACTIVE_THREAD_MAP.containsKey(verifyInfoMap.get("fml_cd"))){
+	                			VerifyCont.VERIFY_ACTIVE_THREAD_MAP.put(String.valueOf(verifyInfoMap.get("fml_cd")),System.currentTimeMillis());
+	                			verifyThreadCreate(verifyInfoMap, selAllWinList);
+	                		}
 	                	}
 	        		}
 	        	}else{
@@ -92,7 +94,7 @@ public class VerifyController extends Thread{
 	        		}
 	        	}       	
 	        	//1000 1초
-	        	Thread.sleep(1000);
+	        	Thread.sleep(2000);
 	        }
 	        logger.info("==============================");
 			logger.info("VERIFY TOTAL COMPLETE!!!!");
