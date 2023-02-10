@@ -4,13 +4,23 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mvc.dao.VerifyDao">
 
-	<select id="selectVerifyList"  resultType ="map"  parameterType="map" >
+	<select id="updVerifyStateStop"  resultType ="map" >
+		UPDATE	TBL_FML
+		SET		STATE = 'stop'
+		WHERE 	STATE != 'comp'
+	</select>
+
+	<select id="selectVerifyFmlList"  resultType ="map"  parameterType="map" >
 		SELECT 	* 
 		FROM 	TBL_FML 
 		WHERE 	1=1	
-		AND		(CHECK_CHAPTER <![CDATA[<]]>  #{max_chapter}  OR  STATE != 'com')
 		AND		USE_YN = 'Y'
+		<if test="check_chapter != null and !''.equals(check_chapter)">
+		AND		(LAST_CHECK_CHAPTER <![CDATA[<]]>  #{check_chapter})
+		</if>
+		<if test="limit != null and !''.equals(limit)">
 		LIMIT   #{limit}
+		</if>
 	</select>
 	
 </mapper> 

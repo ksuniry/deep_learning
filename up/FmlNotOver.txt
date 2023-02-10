@@ -60,7 +60,7 @@ public class FmlNotOver {
 				//fmlInfoMap.get("fml_tbl") 이 from 절에 table 됨 stair
 				fmlInfoMap.put("stair_cd",fml_group);
 				//WHERE  	CHAPTER >= #{check_chapter} AND		STAIR_CD = #{stair_cd}
-				List<Map<String,Object>> chkList =  fmlDao.selFmlInfoList(fmlInfoMap);
+				List<Map<String,Object>> chkList =  fmlDao.selFmlStairInfoList(fmlInfoMap);
 				int chk_idx = 0;
 				// 계단식 마지막은 이번에 도전해야하는 자료..
 				all_win_size = selAllWinList.size();
@@ -88,11 +88,19 @@ public class FmlNotOver {
 							
 							if((j+1)%rang_cnt == 0) {
 								if(notOverCnt >= inc_cnt) {
+									//연속 판단
 									//에러식 증가
 									//to-do : 히스토리 남기고 세부내용 증가 시켜야 함.
+									
+									if(Integer.parseInt(String.valueOf(winnerMap.get("chapter")))
+																	- Integer.parseInt(String.valueOf(fmlInfoMap.get("err_last_chapter"))) == 1){
+										fmlInfoMap.put("cont_cnt", Integer.parseInt(String.valueOf(fmlInfoMap.get("cont_cnt")))+1);
+									}
+									
 									fmlInfoMap.put("err_last_chapter", winnerMap.get("chapter"));
 									fmlInfoMap.put("err_cnt", Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")))+1);
-									if(Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt"))) < 10){
+									
+									if(Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt"))) < 50){
 										fmlInfoMap.put("err_chapter", winnerMap.get("chapter"));
 										fmlDao.insFmlHis(fmlInfoMap);
 									}
@@ -109,17 +117,97 @@ public class FmlNotOver {
 						fmlInfoMap.put("check_chapter", winnerMap.get("chapter"));
 					}
 				}
-				fmlInfoMap.put("state", "com");
-				int err_cnt = Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")));
-				int avg =  Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter"))) / (err_cnt+1);
-				fmlInfoMap.put("avg",avg);
-				//select 100-trunc(100/(700/699));
-			//	fmlInfoMap.put("avg",String.valueOf(fml.fmlMakeMinusPoint(fmlInfoMap,-1)));
+				
+				fmlInfoMap.put("state", "comp");
+				fmlInfoMap.put("avg",Integer.parseInt(String.valueOf(fmlInfoMap.get("check_chapter"))) / (Integer.parseInt(String.valueOf(fmlInfoMap.get("err_cnt")))+1));
+				fmlInfoMap.put("point",String.valueOf(fml.fmlMakeMinusPoint(fmlInfoMap,-1)));
 				
 				fmlDao.udpFmlCheckInfo(fmlInfoMap);
+				//logger.info("==============================> Thread End :"+fml_cd+"("+String.valueOf((System.currentTimeMillis() -VerifyCont.VERIFY_ACTIVE_THREAD_MAP.get(fml_cd))/1000)+") / state : "+state+" / use_yn "+use_yn);
+				VerifyCont.VERIFY_ACTIVE_THREAD_MAP.remove(fml_cd);
+				
 		}catch(Exception ex) {
 			logger.info("@@@@@@ NOTOVER ERROR3 "+fml_cd+":"+ ex.toString());
+		}finally {
+			
 		}
+		
+        return rtnInfo;
+	}
+	
+	
+	public Map<String,Object> notOver1(Map<String,Object> verifyfmlInfoMap,Map<String, Object> winInfoMap) throws Exception {
+		Map<String,Object> rtnInfo = new HashMap<String,Object>();
+		String fml_cd = String.valueOf(verifyfmlInfoMap.get("fml_cd"));
+		
+				
+				Map<String,Object> paramMap = new HashMap<String,Object>();
+				
+				paramMap.put("stair_cd", verifyfmlInfoMap.get("fml_group"));
+				paramMap.put("fml_tbl", verifyfmlInfoMap.get("fml_tbl"));
+				paramMap.put("check_chapter", winInfoMap.get("chapter"));
+				
+				Map<String,Object> stairInfoMap = fmlDao.selFmlStairInfo(paramMap);
+				
+				Map<String,Object> newFmlMap =  null;
+				
+				int[] stairArray = CmmUtil.map45ToIntArray(stairInfoMap);
+				int[] selAllWinArray = CmmUtil.map6ToIntArray(winInfoMap);
+				int rang_cnt = Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("rang_cnt")));
+				int inc_cnt = Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("inc_cnt")));
+				int notOverCnt = 0;
+				
+				for(int j = 0 ; j < 45 ; j++) {
+					
+					for(int k = 0 ; k < 6 ; k++ ) {
+						if(stairArray[j] == selAllWinArray[k]) {
+							notOverCnt++;
+						}
+					}
+						
+					if((j+1)%rang_cnt == 0) {
+						if(notOverCnt >= inc_cnt) {
+							//연속 판단
+							//에러식 증가
+							//to-do : 히스토리 남기고 세부내용 증가 시켜야 함.
+							if(Integer.parseInt(String.valueOf(winInfoMap.get("chapter")))
+															- Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("err_last_chapter"))) == 1){
+								verifyfmlInfoMap.put("cont_cnt", Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("cont_cnt")))+1);
+							}
+							
+							verifyfmlInfoMap.put("err_last_chapter", winInfoMap.get("chapter"));
+							verifyfmlInfoMap.put("err_cnt", Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("err_cnt")))+1);
+							
+							if(Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("err_cnt"))) < 50){
+								verifyfmlInfoMap.put("err_chapter", winInfoMap.get("chapter"));
+								fmlDao.insFmlHis(verifyfmlInfoMap);
+							}
+							if(fmlDao.selNewFml(newFmlMap) == null  //기존에 내용이 없어야 하며
+									&& Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("inc_cnt"))) < 7 //포함은 6개이상 될수가 없고 
+									&& Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("inc_cnt"))) <= Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("rang_cnt"))) //포함 숫자는 기본 범위를 넘을 수 없다 
+									) {
+										newFmlMap = new HashMap<String,Object>();
+										newFmlMap.putAll(verifyfmlInfoMap);
+										newFmlMap.put("fml_cd", verifyfmlInfoMap.get("fml_group")+"_"+verifyfmlInfoMap.get("fml_judg")+"_"+rang_cnt+"_"+(inc_cnt+1));
+										newFmlMap.put("inc_cnt", inc_cnt+1);
+								
+								fmlDao.insNewFml(newFmlMap);
+							}
+							break;
+						}
+						notOverCnt = 0;
+					}
+				}
+				
+				verifyfmlInfoMap.put("avg",Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("last_check_chapter"))) / (Integer.parseInt(String.valueOf(verifyfmlInfoMap.get("err_cnt")))+1));
+				verifyfmlInfoMap.put("point",fml.fmlMakeMinusPoint(verifyfmlInfoMap,-1));
+				
+				fmlDao.udpFmlCheckInfo(verifyfmlInfoMap);
+				//logger.info("==============================> Thread End :"+fml_cd+"("+String.valueOf((System.currentTimeMillis() -VerifyCont.VERIFY_ACTIVE_THREAD_MAP.get(fml_cd))/1000)+") / state : "+state+" / use_yn "+use_yn);
+				VerifyCont.VERIFY_ACTIVE_THREAD_MAP.remove(fml_cd);
+				
+		
+		
         return rtnInfo;
 	}
 		

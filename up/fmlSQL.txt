@@ -20,12 +20,19 @@
         </choose>
 	</select>
 	
-	<select id="selFmlInfoList" resultType="java.util.Map" parameterType="java.util.Map" >
+	<select id="selFmlStairInfoList" resultType="java.util.Map" parameterType="java.util.Map" >
 			SELECT	*
 			FROM 	${fml_tbl}
-			WHERE  	CHAPTER >= #{check_chapter}
+			WHERE  	CHAPTER >= #{last_check_chapter}
 			AND		STAIR_CD = #{stair_cd}
 			ORDER BY CHAPTER
+	</select>
+	
+	<select id="selFmlStairInfo" resultType="java.util.Map" parameterType="java.util.Map" >
+			SELECT	*
+			FROM 	${fml_tbl}
+			WHERE 	STAIR_CD = #{stair_cd}
+			AND 	CHAPTER = #{check_chapter}
 	</select>
 	
 	<select id="selNewFml" resultType="java.util.Map" parameterType="java.util.Map" >
@@ -40,7 +47,7 @@
 								, FML_GROUP
 								, FML_JUDG
 								, FML_TBL
-								, CHECK_CHAPTER
+								, LAST_CHECK_CHAPTER
 								, STATE
 								, RANG_CNT
 								, INC_CNT
@@ -48,7 +55,8 @@
 								, ERR_LAST_CHAPTER
 								, ERR_CNT
 								, AVG
-								, POINT)
+								, POINT
+								, CONT_CNT)
 					VALUES (#{fml_cd}
 								, #{fml_group}
 								, #{fml_judg}
@@ -61,17 +69,25 @@
 								, 0
 								, 0
 								, 0
-								, 100)
+								, 100
+								, 0 )
 		ON CONFLICT (FML_CD)
 		DO NOTHING
 	</insert>
 	
 	<update  id="udpFmlCheckInfo" parameterType="java.util.Map" >
-			UPDATE  TBL_FML SET CHECK_CHAPTER = #{check_chapter}
+			UPDATE  TBL_FML SET LAST_CHECK_CHAPTER = #{last_check_chapter}
 								, ERR_LAST_CHAPTER = #{err_last_chapter} 
 								, STATE = #{state}
 								, ERR_CNT = #{err_cnt}
 								, AVG = #{avg}
+								, POINT = #{point}
+								, CONT_CNT = #{cont_cnt}
+			WHERE 	FML_CD = #{fml_cd}
+	</update>
+	
+	<update  id="udpFmlState" parameterType="java.util.Map" >
+			UPDATE  TBL_FML SET STATE = #{state}
 			WHERE 	FML_CD = #{fml_cd}
 	</update>
 	
@@ -101,11 +117,13 @@
 	</select>
 	
 	<insert id="insFmlHis" parameterType="java.util.Map" >
-	
 		INSERT INTO TBL_FML_HIS (FML_CD
 								, ERR_CHAPTER)
 						VALUES (#{fml_cd}
 								, #{err_chapter})
+		ON CONFLICT (FML_CD , ERR_CHAPTER)
+		DO NOTHING
+		
 	</insert>
 	
 </mapper> 

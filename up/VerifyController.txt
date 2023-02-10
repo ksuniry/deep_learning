@@ -40,8 +40,8 @@ public class VerifyController extends Thread{
 	@Autowired
     ThreadPoolTaskExecutor threadExcutor;
 
-	@RequestMapping(value = "/verifyStart")
-	public ResponseEntity verifyStart(HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/verifyStart1")
+	public ResponseEntity verifyStart1(HttpServletRequest request) throws Exception {
 		logger.info("verifyStart");
 			
 		HttpHeaders header = new HttpHeaders();
@@ -58,22 +58,26 @@ public class VerifyController extends Thread{
 			logger.info("make fml cnt : "+make_cnt);
 			logger.info("==============================");
 			
-			//max chapter 구하기
+			//tbl_win max chapter 구하기
 	        Map<String,Object> paramMap =  mainService.selectSetSat();
 	        //모든 번호 
 	        List<Map<String,Object>> selAllWinList= mainService.selAllWinList();
 	        //fmt 검증식 전체
+	        
+	        verifyService.updVerifyStateStop();
+	        
 	        int empty_cnt  = 0;
 	        Map<String,Object> verifyInfoMap = null;
+	        
+	        
 	        while(true) {
 	        	empty_cnt  =  CmmCont.VERIFY_THREAD_TOTAL_COUNT - VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size();
 	        	
 	        	paramMap.put("limit",empty_cnt < 1 ? 1 : empty_cnt);
-	        	List<Map<String,Object>> verifyList =  verifyService.selectVerifyList(paramMap);
-	        	
+	        	List<Map<String,Object>> verifyList =  verifyService.selectVerifyFmlList(paramMap);
 	        	if(verifyList != null && verifyList.size() > 0) {
 	        		logger.info("==============================");
-					logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD SIZE : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size());
+					logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD SIZE : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size()+" // "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.toString());
 					logger.info("==============================");
 	        		if(empty_cnt > 0) {
 	                	for(int i = 0 ; i < verifyList.size() ; i++ ) {
@@ -110,6 +114,100 @@ public class VerifyController extends Thread{
 		Runnable runnable = () -> {
 			//thread 적재
 			verifyService.startVerify(verifyInfoMap, selAllWinList);
+		};
+		threadExcutor.execute(runnable);
+	}
+	
+	
+	@RequestMapping(value = "/verifyStart")
+	public ResponseEntity verifyStart(HttpServletRequest request) throws Exception {
+		logger.info("verifyStart");
+			
+		HttpHeaders header = new HttpHeaders();
+        header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        Map<String,Object> rtnMap = new HashMap<String,Object>();
+        
+		if(!VerifyCont.VERIFY_ACTIVE) {
+			VerifyCont.VERIFY_ACTIVE = true;
+			
+			int make_fml_cnt = fml.fmlStairMake();
+			logger.info("==============================");
+			logger.info("fml "+make_fml_cnt + " Exist!");
+			logger.info("==============================");
+			
+	        //모든 번호 
+	        List<Map<String,Object>> selAllWinList= mainService.selAllWinList();
+	        
+	        Map<String,Object> paramMap  = null;
+	        
+	        //검증 시작
+	        for(Map<String,Object> winInfoMap : selAllWinList) {
+	        	
+	        	paramMap = new HashMap<String,Object>();
+	        	paramMap.put("check_chapter",winInfoMap.get("chapter"));
+	        	
+		        Map<String,Object> verifyFmlInfoMap = null;
+		        int empty_cnt  = 0;
+		        int verify_thread_tot_cnt = 0;
+		        int verify_thread_Map_size = 0;
+		        
+		        while(true) {
+		        	verify_thread_tot_cnt =  CmmCont.VERIFY_THREAD_TOTAL_COUNT ;
+		        	verify_thread_Map_size = VerifyCont.VERIFY_ACTIVE_THREAD_MAP.size();
+		        	empty_cnt  =  verify_thread_tot_cnt - verify_thread_Map_size;
+		        	
+		        	paramMap.put("limit",empty_cnt < 1 ? 1 : empty_cnt);
+		        	
+		        	List<Map<String,Object>> verifyFmlList =  verifyService.selectVerifyFmlList(paramMap);
+		        	
+		        	if(verifyFmlList != null && verifyFmlList.size() > 0) {
+		        		logger.info("==============================");
+						logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD SIZE : "+verify_thread_tot_cnt+" // "+verify_thread_Map_size);
+						logger.info("==============================");
+		        		if(empty_cnt > 0) {
+		                	for(int i = 0 ; i < verifyFmlList.size() ; i++ ) {
+		                		verifyFmlInfoMap = verifyFmlList.get(i);
+		                		if(!VerifyCont.VERIFY_ACTIVE_THREAD_MAP.containsKey(verifyFmlInfoMap.get("fml_cd"))){
+		                			VerifyCont.VERIFY_ACTIVE_THREAD_MAP.put(String.valueOf(verifyFmlInfoMap.get("fml_cd")),System.currentTimeMillis());
+		                			verifyThreadCreate1(verifyFmlInfoMap, winInfoMap);
+		                		}
+		                	}
+		        		}
+		        	}else{
+		        		logger.info("==============================");
+						logger.info("Runnable cnt : " + empty_cnt +" / ACTIVE THREAD ToString : "+VerifyCont.VERIFY_ACTIVE_THREAD_MAP.toString());
+						logger.info("==============================");
+		        		if("{}".equals(VerifyCont.VERIFY_ACTIVE_THREAD_MAP.toString())) {
+		        			VerifyCont.VERIFY_ACTIVE = false;
+		        			break;
+		        		}
+		        	}       	
+		        	//1000 1초
+		        	Thread.sleep(2000);
+		        }
+	        }
+
+	        logger.info("==============================");
+			logger.info("VERIFY TOTAL COMPLETE!!!!");
+			logger.info("==============================");
+			
+		}else {
+			logger.info("VERIFY RUNNING..");
+			rtnMap.put("msg", "검증 실행중 ");
+		}
+		return new ResponseEntity<>(rtnMap, header, HttpStatus.OK);
+	}
+	
+	
+	public void verifyThreadCreate1(Map<String,Object> verifyFmlInfoMap,Map<String,Object> winInfoMap) throws Exception {	
+		Runnable runnable = () -> {
+			//thread 적재
+			try {
+				verifyService.startVerify1(verifyFmlInfoMap, winInfoMap);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		};
 		threadExcutor.execute(runnable);
 	}

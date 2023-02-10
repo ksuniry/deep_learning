@@ -249,7 +249,7 @@ CREATE TABLE public.TBL_fml (
 	fml_group varchar(30) NOT NULL,
 	fml_judg varchar(30) NOT NULL,
 	fml_TBL varchar(30) NOT NULL,
-	check_chapter int4 NOT NULL,
+	last_check_chapter int4 NOT NULL,
 	state varchar(30) NOT NULL,
 	rang_cnt int4 NOT NULL,
 	inc_cnt int4 NOT NULL,
@@ -258,6 +258,7 @@ CREATE TABLE public.TBL_fml (
 	err_cnt int4 NOT NULL, 
 	avg int4 NOT NULL, 
 	point int4 NOT NULL, 
+	cont_cnt int4 NOT NULL,
 	CONSTRAINT p_tc_chapter PRIMARY KEY (fml_cd)
 );
 CREATE index idx_1_fml on TBL_fml (fml_cd,fml_group,fml_judg);		

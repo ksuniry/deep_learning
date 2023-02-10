@@ -25,9 +25,14 @@ public class FmlDao {
 	}
 	
 
-	public List<Map<String,Object>> selFmlInfoList(Map<String,Object> params){
+	public List<Map<String,Object>> selFmlStairInfoList(Map<String,Object> params){
 			
-		return sqlSession.selectList(name_space+".selFmlInfoList", params);
+		return sqlSession.selectList(name_space+".selFmlStairInfoList", params);
+	}
+	
+	public Map<String,Object> selFmlStairInfo(Map<String,Object> params){
+		
+		return sqlSession.selectOne(name_space+".selFmlStairInfo", params);
 	}
 	
 	public Map<String,Object> selNewFml(Map<String,Object> params){
@@ -45,6 +50,10 @@ public class FmlDao {
 		return sqlSession.update(name_space+".udpFmlCheckInfo", params);
 	}
 	
+	public int udpFmlState(Map<String,Object> params){
+		
+		return sqlSession.update(name_space+".udpFmlState", params);
+	}
 	
 	public  List<Map<String,Object>> selRealStairStairCdList(){
 		
